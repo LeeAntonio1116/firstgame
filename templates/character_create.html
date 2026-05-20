@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}캐릭터 생성 — 삼국지 길드{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 480px;">
+  <h1>캐릭터 생성</h1>
+
+  {% if error %}
+  <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <p style="text-align:center; color:#a0a0b0; font-size:0.85rem; margin-bottom:1.2rem;">
+    마음에 들 때까지 굴려도 좋습니다.
+  </p>
+
+  {% set total = namespace(val=0) %}
+  {% for key, _ in stat_fields %}{% set total.val = total.val + stats[key] %}{% endfor %}
+
+  <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem;">
+    <thead>
+      <tr>
+        <th style="text-align:left; color:#a0a0b0; font-size:0.85rem; padding:0.3rem 0.5rem; border-bottom:1px solid #0f3460;">스탯</th>
+        <th style="text-align:right; color:#a0a0b0; font-size:0.85rem; padding:0.3rem 0.5rem; border-bottom:1px solid #0f3460;">수치</th>
+        <th style="text-align:right; color:#a0a0b0; font-size:0.85rem; padding:0.3rem 0.5rem; border-bottom:1px solid #0f3460;">초기 최대</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for key, label in stat_fields %}
+      <tr>
+        <td style="padding:0.4rem 0.5rem; color:#e0e0e0;">{{ label }}</td>
+        <td style="padding:0.4rem 0.5rem; text-align:right; color:#e94560; font-weight:bold;">{{ stats[key] }}</td>
+        <td style="padding:0.4rem 0.5rem; text-align:right; color:#555a7a; font-size:0.85rem;">75</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr style="border-top:1px solid #0f3460;">
+        <td style="padding:0.5rem 0.5rem; color:#a0a0b0; font-size:0.9rem;">합계</td>
+        <td style="padding:0.5rem 0.5rem; text-align:right; color:#f0c040; font-weight:bold;">{{ total.val }}</td>
+        <td style="padding:0.5rem 0.5rem; text-align:right; color:#555a7a; font-size:0.85rem;">350</td>
+      </tr>
+    </tfoot>
+  </table>
+  <p style="text-align:right; color:#555a7a; font-size:0.75rem; margin-top:-1rem; margin-bottom:1.2rem;">
+    * 초기 최대치이며, 이후 성장으로 초과 가능
+  </p>
+
+  <!-- 다시 굴리기 -->
+  <a href="/character/create" style="display:block; margin-bottom:0.8rem;">
+    <button type="button" style="background:#0f3460;">다시 굴리기</button>
+  </a>
+
+  <!-- 확정 폼 -->
+  <form method="post" action="/character/confirm">
+    {% for key, _ in stat_fields %}
+    <input type="hidden" name="{{ key }}" value="{{ stats[key] }}">
+    {% endfor %}
+
+    <label>캐릭터 이름</label>
+    <input type="text" name="name" maxlength="20" placeholder="이름을 입력하세요" required>
+
+    <button type="submit">확정</button>
+  </form>
+</div>
+{% endblock %}
