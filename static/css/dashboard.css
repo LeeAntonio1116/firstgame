@@ -1,0 +1,1084 @@
+/*
+ * dashboard.html 전용 페이지 스타일 — 묵빛 군막 토큰화 (P6-1-B)
+ * 공통 컴포넌트(.panel-card·.btn-primary·.btn-danger·.stat-bar-*·.item-card·.mail-actor·.num
+ * ·.input-base·.modal-*·.toast-*)는 components.css 단일 출처. 본 파일은 페이지 레이아웃·고유 § 만.
+ * 색·spacing·radius·motion·shadow 직접 입력 금지. 모두 var(--*) 경유.
+ */
+
+body {
+  display: block;
+}
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── 헤더 ── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-panel);
+  background-image: var(--texture-parchment);
+  background-blend-mode: overlay;
+  border-bottom: 2px solid var(--color-point);
+  padding: 0 var(--space-6);
+  height: 56px;
+  flex-shrink: 0;
+}
+.header-logo {
+  color: var(--color-point);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-family: "Noto Serif KR", serif;
+}
+.header-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.header-countdown .cd-label {
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+  letter-spacing: 1px;
+}
+.header-countdown .cd-time {
+  font-size: 1.1rem;
+  color: var(--color-point);
+  font-weight: 700;
+  letter-spacing: 3px;
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.85rem;
+  color: var(--color-text-tertiary);
+}
+.header-gold {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.btn-logout {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  font-family: inherit;
+  width: auto;
+  transition:
+    background var(--duration-base) var(--easing-standard),
+    color var(--duration-base) var(--easing-standard);
+}
+.btn-logout:hover {
+  background: var(--state-hover-bg);
+  color: var(--color-text-primary);
+}
+
+/* ── 상단 탭 ── */
+.top-tabs {
+  display: flex;
+  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-panel-border);
+  padding: 0 var(--space-4);
+  flex-shrink: 0;
+  gap: 2px;
+}
+.top-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-tertiary);
+  font-size: 0.9rem;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  font-family: inherit;
+  width: auto;
+  transition:
+    color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard);
+  margin-bottom: -1px;
+}
+.top-tab:hover {
+  color: var(--color-text-primary);
+  background: transparent;
+}
+.top-tab.active {
+  color: var(--color-point);
+  border-bottom-color: var(--color-point);
+  background: transparent;
+}
+
+/* ── 메인 레이아웃 ── */
+.main-layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── 좌측 사이드바 ── */
+.sidebar {
+  width: 180px;
+  background-color: var(--color-panel);
+  background-image: var(--texture-parchment);
+  background-blend-mode: overlay;
+  border-right: 1px solid var(--color-panel-border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: var(--space-2) 0;
+}
+.sidebar-section {
+  display: none;
+}
+.sidebar-section.active {
+  display: block;
+}
+.sidebar-item {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: var(--color-text-tertiary);
+  font-size: 0.85rem;
+  text-align: left;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard),
+    background var(--duration-fast) var(--easing-standard);
+}
+.sidebar-item:hover {
+  color: var(--color-text-primary);
+  background-color: var(--state-hover-bg);
+}
+.sidebar-item.active {
+  color: var(--color-point);
+  border-left-color: var(--color-point);
+  background-color: var(--state-active-bg);
+}
+
+/* ── 중앙 패널 ── */
+.center-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  background: var(--color-bg);
+}
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+
+.panel-title {
+  color: var(--color-point);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-panel-border);
+  font-family: "Noto Serif KR", serif;
+}
+
+/* 캐릭터 정보 */
+.char-name {
+  font-size: 1.4rem;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  font-family: "Noto Serif KR", serif;
+}
+.stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 400px;
+}
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-1);
+  border-radius: var(--radius-md);
+}
+.stat-name {
+  width: 3.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-tertiary);
+}
+.stat-value {
+  width: 2.5rem;
+  text-align: right;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+/* components.css의 .stat-bar-bg는 width 명시 없음 — flex 컨테이너 안에서 늘리려면 페이지에서 flex:1 부여 */
+.stat-list .stat-bar-bg,
+.skill-list .stat-bar-bg {
+  flex: 1;
+}
+
+/* 합계 / 부상 / 기술 섹션 */
+.stat-total {
+  color: var(--color-text-tertiary);
+  font-size: 0.82rem;
+  margin-top: var(--space-3);
+  text-align: right;
+  max-width: 400px;
+}
+.injury-badge {
+  background-color: var(--state-active-bg);
+  border: 1px solid var(--color-point);
+  border-radius: var(--radius-md);
+  color: var(--color-point);
+  font-size: 0.82rem;
+  padding: var(--space-1) var(--space-3);
+  margin-top: var(--space-3);
+  max-width: 400px;
+}
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--color-panel-border);
+  margin: var(--space-4) 0;
+  max-width: 400px;
+}
+.sub-section-title {
+  color: var(--color-point);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  font-family: "Noto Serif KR", serif;
+}
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 400px;
+}
+.skill-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1);
+}
+.skill-name {
+  width: 4rem;
+  font-size: 0.82rem;
+  color: var(--color-text-tertiary);
+}
+
+/* 준비 중 */
+.placeholder {
+  color: var(--color-text-tertiary);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: var(--space-8) 0;
+}
+
+/* ── 우측 보조 패널 ── */
+.right-panel {
+  width: 480px;
+  background-color: var(--color-panel);
+  background-image: var(--texture-parchment);
+  background-blend-mode: overlay;
+  border-left: 1px solid var(--color-panel-border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: var(--space-4);
+}
+.right-content {
+  display: none;
+}
+.right-content.active {
+  display: block;
+}
+.right-title {
+  color: var(--color-point);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-panel-border);
+  font-family: "Noto Serif KR", serif;
+}
+.right-empty {
+  color: var(--color-text-tertiary);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: var(--space-6) 0;
+}
+
+/* 스탯 설명 (우측 패널) */
+.stat-desc-name {
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+.stat-desc-val {
+  font-size: 1.6rem;
+  color: var(--color-point);
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.stat-desc-text {
+  font-size: 0.82rem;
+  color: var(--color-text-tertiary);
+  line-height: 1.6;
+}
+
+/* 하단 계정관리 */
+.account-bar {
+  border-top: 1px solid var(--color-panel-border);
+  background-color: var(--color-panel);
+  background-image: var(--texture-parchment);
+  background-blend-mode: overlay;
+  padding: var(--space-2) var(--space-6);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: 0.82rem;
+}
+.account-bar details summary {
+  cursor: pointer;
+  color: var(--color-point);
+}
+.delete-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.delete-form input {
+  width: 160px;
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.82rem;
+  margin-bottom: 0;
+}
+
+/* 대장간 시작 배너 */
+.action-banner {
+  background-color: var(--state-active-bg);
+  border: 1px solid var(--color-point);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  max-width: 400px;
+}
+.action-banner p {
+  color: var(--color-text-tertiary);
+  font-size: 0.85rem;
+  margin-bottom: var(--space-2);
+}
+
+/* 통제실 */
+.command-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-3) 0;
+}
+.command-list li {
+  font-size: 0.82rem;
+  color: var(--color-text-tertiary);
+  padding: var(--space-1) var(--space-1);
+  border-bottom: 1px solid var(--color-panel-border);
+}
+.form-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-3);
+  font-size: 0.85rem;
+}
+.form-label {
+  color: var(--color-text-tertiary);
+  min-width: 3rem;
+}
+.form-value {
+  color: var(--color-text-primary);
+}
+.placeholder-sm {
+  color: var(--color-text-tertiary);
+  font-size: 0.82rem;
+  padding: var(--space-1) 0;
+}
+.work-radio {
+  font-size: 0.85rem;
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  margin-right: var(--space-3);
+}
+.work-radio input {
+  margin: 0;
+}
+
+/* 우편함 */
+.mail-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.mail-item {
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.mail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+}
+.mail-header:hover {
+  background-color: var(--state-hover-bg);
+}
+.mail-title {
+  font-size: 0.88rem;
+  color: var(--color-text-primary);
+}
+.mail-title-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.mail-date {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.mail-detail {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-panel-border);
+}
+.result-table {
+  width: 100%;
+  font-size: 0.8rem;
+  border-collapse: collapse;
+  margin-bottom: var(--space-2);
+}
+.result-table th {
+  color: var(--color-point);
+  padding: var(--space-1) var(--space-1);
+  text-align: left;
+  border-bottom: 1px solid var(--color-panel-border);
+}
+.result-table td {
+  color: var(--color-text-primary);
+  padding: var(--space-1) var(--space-1);
+  border-bottom: 1px solid var(--color-panel-border);
+}
+.quality-result {
+  font-size: 0.88rem;
+  color: var(--color-text-primary);
+}
+.quality-result strong {
+  color: var(--color-point);
+  font-size: 1rem;
+}
+.injury-warn {
+  margin-top: var(--space-1);
+  color: var(--color-point);
+  font-size: 0.82rem;
+}
+/* P6 S2-B v2: 후처리 재굴림 사용 박스 */
+.reroll-log-box {
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--color-panel-border);
+  border-left: 3px solid var(--color-point);
+  background: var(--color-panel-soft, transparent);
+  font-size: 0.82rem;
+}
+.reroll-log-title {
+  color: var(--color-point);
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+.reroll-log-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  color: var(--color-text-primary);
+  padding: 2px 0;
+}
+.reroll-step {
+  color: var(--color-text-secondary);
+  min-width: 4em;
+}
+.reroll-layer {
+  color: var(--color-text-tertiary);
+  min-width: 3em;
+}
+.reroll-roll {
+  font-family: var(--font-num, inherit);
+}
+.result-success {
+  color: var(--color-success);
+}
+.result-fail {
+  color: var(--color-text-tertiary);
+}
+
+/* ── P6 S2-C 성장 보고 메일 ── */
+.growth-section {
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: rgba(0, 0, 0, 0.06);
+  border-left: 3px solid var(--color-panel-border);
+  border-radius: var(--radius-sm);
+}
+.growth-section:first-child {
+  margin-top: var(--space-1);
+}
+.growth-section-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: var(--space-2);
+  letter-spacing: 0.02em;
+}
+/* 종류별 modifier — 좌측 띠 + 소제목 색 */
+.growth-section--up {
+  background-color: rgba(212, 175, 55, 0.1);
+  border-left-color: var(--color-accent);
+}
+.growth-section--up .growth-section-title {
+  color: var(--color-accent);
+}
+.growth-section--acc {
+  border-left-color: var(--color-info);
+}
+.growth-section--acc .growth-section-title {
+  color: var(--color-info);
+}
+.growth-section--cmd {
+  border-left-color: var(--color-text-tertiary);
+}
+.growth-section--cmd .growth-section-title {
+  color: var(--color-text-secondary);
+}
+
+/* ── 결과 레벨 색 (대장간·거래 메일 d100 결과 가독성) ──
+   한글 CSS 클래스는 일부 브라우저에서 escape 필요 — 영문 키로 매핑 (dashboard.html Jinja2)
+*/
+.lv-crit-succ {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+.lv-extreme-succ {
+  color: var(--color-info);
+  font-weight: 600;
+}
+.lv-hard-succ {
+  color: var(--color-success);
+}
+.lv-normal-succ {
+  color: var(--color-text-secondary);
+}
+.lv-fail {
+  color: var(--color-text-tertiary);
+}
+.lv-crit-fail {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+.growth-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.growth-list li {
+  padding: var(--space-1) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+}
+.growth-row {
+  margin-top: var(--space-1);
+  font-size: 0.9rem;
+}
+.gr-label {
+  display: inline-block;
+  min-width: 4em;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-right: var(--space-2);
+}
+.growth-kind-badge {
+  display: inline-block;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background-color: var(--state-hover-bg);
+  color: var(--color-text-tertiary);
+  font-size: 0.78rem;
+}
+
+/* ── P3-4 창고 UI ── */
+.warehouse-cat-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+  flex-wrap: wrap;
+}
+.cat-tab {
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-tertiary);
+  font-size: 0.82rem;
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  transition:
+    background var(--duration-base) var(--easing-standard),
+    color var(--duration-base) var(--easing-standard);
+}
+.cat-tab:hover {
+  background-color: var(--state-hover-bg);
+  color: var(--color-text-primary);
+}
+.cat-tab.active {
+  background: var(--color-point);
+  color: var(--color-text-primary);
+  border-color: var(--color-point);
+}
+.cat-badge {
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+  font-size: 0.72rem;
+  padding: 0.05rem var(--space-1);
+  border-radius: var(--radius-pill);
+  font-family: "Outfit", sans-serif;
+}
+.cat-tab.active .cat-badge {
+  background: rgba(255, 255, 255, 0.25);
+}
+.warehouse-filter {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.warehouse-filter input,
+.warehouse-filter select {
+  flex: 1;
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: 0.82rem;
+  padding: var(--space-1) var(--space-2);
+  font-family: inherit;
+}
+.warehouse-filter select {
+  flex: 0 0 9rem;
+}
+.warehouse-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.warehouse-table thead th {
+  color: var(--color-point);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: left;
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--color-panel-border);
+  position: sticky;
+  top: 0;
+  background: var(--color-bg);
+}
+.warehouse-table tbody tr {
+  cursor: pointer;
+  border-bottom: 1px solid var(--color-panel-border);
+}
+.warehouse-table tbody tr:hover {
+  background-color: var(--state-hover-bg);
+}
+.warehouse-table tbody tr.selected {
+  background-color: var(--state-active-bg);
+  box-shadow: inset 3px 0 0 var(--color-point);
+}
+.warehouse-table td {
+  padding: var(--space-1) var(--space-2);
+  color: var(--color-text-primary);
+}
+.warehouse-table .col-name {
+  width: auto;
+}
+.warehouse-table .col-quality {
+  width: 4.5rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.warehouse-table .col-quantity {
+  width: 4.5rem;
+  text-align: right;
+  font-weight: 700;
+  color: var(--color-point);
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 창고 row 등급(rarity·quality) 시각화 — 좌측 색띠 + 이름 색
+ * 광석·주괴·합금 = 소재 rarity, 무기 = quality 1~5 (dashboard.js renderWarehouse 부여)
+ * selected 시 색띠는 --color-point 우선 (.selected box-shadow가 위 정의됨) */
+.warehouse-table tbody tr.rarity-1:not(.selected) {
+  box-shadow: inset 3px 0 0 var(--rarity-1);
+}
+.warehouse-table tbody tr.rarity-2:not(.selected) {
+  box-shadow: inset 3px 0 0 var(--rarity-2);
+}
+.warehouse-table tbody tr.rarity-3:not(.selected) {
+  box-shadow: inset 3px 0 0 var(--rarity-3);
+}
+.warehouse-table tbody tr.rarity-4:not(.selected) {
+  box-shadow: inset 3px 0 0 var(--rarity-4);
+}
+.warehouse-table tbody tr.rarity-5:not(.selected) {
+  box-shadow: inset 3px 0 0 var(--rarity-5);
+}
+.warehouse-table tbody tr.rarity-1 .col-name {
+  color: var(--rarity-1);
+}
+.warehouse-table tbody tr.rarity-2 .col-name {
+  color: var(--rarity-2);
+}
+.warehouse-table tbody tr.rarity-3 .col-name {
+  color: var(--rarity-3);
+}
+.warehouse-table tbody tr.rarity-4 .col-name {
+  color: var(--rarity-4);
+}
+.warehouse-table tbody tr.rarity-5 .col-name {
+  color: var(--rarity-5);
+}
+
+/* 아이템 상세 카드 */
+.item-stats-row {
+  display: flex;
+  gap: var(--space-3);
+  font-size: 0.82rem;
+  margin-bottom: var(--space-3);
+}
+.item-stat-pill {
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-1) var(--space-2);
+  color: var(--color-text-primary);
+}
+.item-stat-pill strong {
+  color: var(--color-point);
+}
+.item-section {
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-panel-border);
+}
+.item-section-label {
+  color: var(--color-point);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  font-family: "Noto Serif KR", serif;
+}
+.item-section-body {
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.item-section-body ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+.item-section-body li {
+  margin-bottom: 0.2rem;
+}
+.item-section-placeholder {
+  color: var(--color-text-disabled);
+  font-style: italic;
+  font-size: 0.78rem;
+}
+
+/* 우측 패널 — 아이템 상세 */
+.right-item-meta {
+  font-size: 0.82rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-1);
+}
+.right-item-log {
+  margin-top: var(--space-2);
+}
+.log-note {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-1);
+  font-style: italic;
+}
+.log-step {
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-1) var(--space-2);
+  margin-bottom: var(--space-1);
+  font-size: 0.78rem;
+}
+.log-step-name {
+  color: var(--color-point);
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+.log-step-detail {
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+.log-step-points {
+  color: var(--color-text-tertiary);
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+}
+
+/* ── P4-1 중앙광장 ── */
+.plaza-section {
+  margin-bottom: var(--space-4);
+  max-width: 560px;
+}
+.inv-slots {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+.inv-slot {
+  flex: 1;
+  min-height: 4.8rem;
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.25rem;
+}
+.inv-slot.empty {
+  color: var(--color-text-disabled);
+  font-size: 0.76rem;
+}
+.inv-slot-name {
+  font-size: 0.72rem;
+  color: var(--color-text-primary);
+  line-height: 1.25;
+}
+.inv-slot-qty {
+  font-size: 0.78rem;
+  color: var(--color-point);
+  font-weight: 700;
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.inv-slot form {
+  margin: 0;
+}
+.inv-slot button {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 0.68rem;
+  padding: 0.15rem 0.45rem;
+  cursor: pointer;
+  font-family: inherit;
+  width: auto;
+  transition: background var(--duration-base) var(--easing-standard);
+}
+.inv-slot button:hover {
+  background-color: var(--state-hover-bg);
+}
+.plaza-predict {
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  margin-top: var(--space-2);
+  line-height: 1.6;
+}
+.plaza-predict strong {
+  color: var(--color-accent);
+}
+.plaza-hint {
+  color: var(--color-text-tertiary);
+  font-size: 0.78rem;
+  margin-bottom: var(--space-2);
+}
+.plaza-predict.warn {
+  color: var(--color-point);
+}
+
+/* 우편함 거래 탭 */
+.trade-mail-row {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  padding: 0.15rem 0;
+}
+.trade-mail-row .tm-label {
+  color: var(--color-point);
+  margin-right: var(--space-1);
+}
+
+/* P5 인벤 슬롯 owner 칩 */
+.inv-slot-owner {
+  font-size: 0.7rem;
+  color: var(--color-info);
+  margin-bottom: 0.15rem;
+}
+
+/* ── P5 NPC 카드 그리드 ── */
+/* .npc-card 는 .panel-card 위에 size·layout·상태 modifier 만 얹는다 */
+.npc-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
+.npc-card {
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: border-color var(--duration-base) var(--easing-standard);
+}
+.npc-card:hover {
+  border-color: var(--color-accent-dim);
+}
+.npc-card.selected {
+  border-color: var(--color-accent-hover);
+  background-color: var(--state-active-bg);
+}
+.npc-card.candidate {
+  border-left: 3px solid var(--color-info);
+}
+.npc-card-name {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--color-text-primary);
+  margin-bottom: 0.2rem;
+  font-family: "Noto Serif KR", serif;
+}
+.npc-card-stats {
+  font-size: 0.74rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+.npc-card-meta {
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+  margin-top: 0.2rem;
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── P5 통제실 명령 항목 ── */
+/* .control-command-item 도 .panel-card 위에 얇은 layout 만 */
+.control-command-list .control-command-item {
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  transition: background var(--duration-base) var(--easing-standard);
+}
+.control-command-item:hover {
+  background-color: var(--state-hover-bg);
+}
+.control-command-item.selected {
+  border-color: var(--color-accent-hover);
+  background-color: var(--state-active-bg);
+}
+.control-command-item .cmd-time {
+  color: var(--color-text-tertiary);
+  font-size: 0.78rem;
+  margin-right: var(--space-1);
+  font-family: "Outfit", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.control-command-item .cmd-result {
+  color: var(--color-text-primary);
+  margin-right: var(--space-1);
+}
+.control-command-item .cmd-meta {
+  color: var(--color-text-tertiary);
+  font-size: 0.75rem;
+}
+
+/* ── 페이지 헬퍼 ── */
+.cmd-warning {
+  color: var(--color-point);
+  margin-left: var(--space-2);
+  font-size: 0.82rem;
+}
+.delete-error {
+  color: var(--color-point);
+  font-size: 0.82rem;
+}
+.cmd-warning-banner {
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-warning);
+  background: var(--state-active-bg);
+  color: var(--color-text-primary);
+  font-size: 0.88rem;
+}
+
+/* 창고 우측 패널 — 인벤토리 이동 작은 폼 */
+.move-item-form {
+  margin-top: var(--space-1);
+}
+.move-item-row {
+  margin-top: var(--space-1);
+}
+.move-item-form .form-select {
+  font-size: 0.78rem;
+}
+.move-item-qty {
+  font-size: 0.78rem;
+  width: 5rem;
+}
+.move-item-max {
+  margin-left: var(--space-1);
+  font-size: 0.75rem;
+}
+.move-item-submit {
+  font-size: 0.78rem;
+  padding: var(--space-1) var(--space-3);
+  margin-top: var(--space-1);
+}

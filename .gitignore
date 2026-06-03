@@ -39,3 +39,8 @@ desktop.ini
 # 로그
 *.log
 logs/
+
+# 내부 개발 문서 (public repo라 비공개 — 로컬 파일은 유지)
+docs/
+STATUS.md
+CODE_MAP.md

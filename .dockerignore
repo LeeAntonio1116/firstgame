@@ -1,0 +1,26 @@
+# [S10] 컨테이너 이미지에서 제외 (런타임 무관·민감 파일). .gcloudignore와 동일 내용.
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.*
+.git/
+.gitignore
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.log
+scripts/
+docs/
+migrations/
+*.md
+.prettierrc
+.prettierignore
+requirements-dev.txt
+pyproject.toml
+.vscode/
+.idea/

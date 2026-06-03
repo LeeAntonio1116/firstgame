@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}삼국지 길드{% endblock %}</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Malgun Gothic', sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .card { background: #16213e; border: 1px solid #0f3460; border-radius: 8px; padding: 2rem; width: 100%; max-width: 400px; }
-    h1 { color: #e94560; text-align: center; margin-bottom: 1.5rem; font-size: 1.5rem; }
-    label { display: block; margin-bottom: 0.3rem; font-size: 0.9rem; color: #a0a0b0; }
-    input { width: 100%; padding: 0.6rem 0.8rem; background: #0f3460; border: 1px solid #1a4a7a; border-radius: 4px; color: #e0e0e0; font-size: 1rem; margin-bottom: 1rem; }
-    input:focus { outline: none; border-color: #e94560; }
-    button { width: 100%; padding: 0.7rem; background: #e94560; border: none; border-radius: 4px; color: #fff; font-size: 1rem; cursor: pointer; font-family: inherit; }
-    button:hover { background: #c73652; }
-    .error { background: #3a1020; border: 1px solid #e94560; color: #ff6b8a; padding: 0.6rem 0.8rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem; }
-    .success { background: #0a3020; border: 1px solid #2ecc71; color: #2ecc71; padding: 0.6rem 0.8rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem; }
-    .link-row { text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #a0a0b0; }
-    .link-row a { color: #e94560; text-decoration: none; }
-    .link-row a:hover { text-decoration: underline; }
-  </style>
-  {% block extra_styles %}{% endblock %}
-</head>
-<body>
-  {% block content %}{% endblock %}
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}삼국지 길드{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/tokens.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; background: var(--color-bg); color: var(--color-text-primary); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+      .card { background-color: var(--color-panel); background-image: var(--texture-parchment); background-blend-mode: overlay; border: 1px solid var(--color-panel-border); border-radius: var(--radius-lg); box-shadow: var(--color-panel-shadow); padding: var(--space-8); width: 100%; max-width: 400px; }
+      h1 { color: var(--color-point); text-align: center; margin-bottom: var(--space-6); font-size: 1.5rem; font-family: 'Noto Serif KR', serif; }
+      label { display: block; margin-bottom: var(--space-1); font-size: 0.9rem; color: var(--color-text-tertiary); }
+      input { width: 100%; padding: var(--space-2) var(--space-3); background-color: var(--color-bg-elevated); border: 1px solid var(--color-panel-border); border-radius: var(--radius-md); color: var(--color-text-primary); font-size: 1rem; margin-bottom: var(--space-4); font-family: inherit; }
+      input:focus { outline: none; border-color: var(--color-accent); box-shadow: var(--state-focus-ring); }
+      .card button { width: 100%; padding: var(--space-3); background: var(--color-accent); border: 1px solid var(--color-accent-dim); border-radius: var(--radius-md); color: hsl(30, 20%, 10%); font-size: 1rem; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: background var(--duration-base) var(--easing-standard); }
+      .card button:hover { background: var(--color-accent-hover); }
+      .error { background-color: var(--state-error-bg); border: 1px solid var(--state-error-border); color: var(--color-point); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-size: 0.9rem; }
+      .success { background-color: hsla(155, 50%, 42%, 0.10); border: 1px solid var(--color-success); color: var(--color-success); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-size: 0.9rem; }
+      .link-row { text-align: center; margin-top: var(--space-4); font-size: 0.9rem; color: var(--color-text-tertiary); }
+      .link-row a { color: var(--color-accent); text-decoration: none; }
+      .link-row a:hover { text-decoration: underline; }
+    </style>
+    {% block extra_styles %}{% endblock %}
+  </head>
+  <body>
+    {% block content %}{% endblock %}
+  </body>
 </html>

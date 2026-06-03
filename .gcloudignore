@@ -1,0 +1,27 @@
+# [S10] gcloud run deploy --source 업로드 컨텍스트에서 제외.
+# .gcloudignore가 있으면 .gitignore를 자동 상속하지 않으므로 .dockerignore와 동일하게 명시.
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.*
+.git/
+.gitignore
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.log
+scripts/
+docs/
+migrations/
+*.md
+.prettierrc
+.prettierignore
+requirements-dev.txt
+pyproject.toml
+.vscode/
+.idea/

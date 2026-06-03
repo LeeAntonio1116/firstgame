@@ -6,16 +6,17 @@
 실행: firstgame/ 폴더에서
   .venv\\Scripts\\python.exe scripts/sim_quality.py
 """
+
 import os
-import sys
 import statistics
+import sys
 from collections import Counter
 
 # firstgame/ 루트를 import 경로에 추가
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from engine import blacksmith
-from engine.materials import STEPS_ORE, STEPS_INGOT
+from engine.materials import STEPS_INGOT, STEPS_ORE
 
 RUNS = 10000
 
@@ -52,7 +53,11 @@ def simulate(steps: list, skill_value: int, mat_value: int, is_injured: bool = F
     return {
         "min": points_list[0],
         "max": points_list[-1],
-        "p5": pct(5), "p25": pct(25), "p50": pct(50), "p75": pct(75), "p95": pct(95),
+        "p5": pct(5),
+        "p25": pct(25),
+        "p50": pct(50),
+        "p75": pct(75),
+        "p95": pct(95),
         "mean": statistics.mean(points_list),
         "quality_dist": dict(sorted(quality_counter.items())),
         "injury_rate": injury_count / RUNS,
@@ -62,20 +67,22 @@ def simulate(steps: list, skill_value: int, mat_value: int, is_injured: bool = F
 def print_result(label: str, r: dict) -> None:
     print(f"\n--- {label} ---")
     print(f"  Range: {r['min']:+d} ~ {r['max']:+d}, Mean: {r['mean']:+.2f}")
-    print(f"  Percentile: p5={r['p5']:+d}, p25={r['p25']:+d}, p50={r['p50']:+d}, p75={r['p75']:+d}, p95={r['p95']:+d}")
-    print(f"  Quality dist (1~5등급, 현재 임계값 ≥8/5/2/-1):")
+    print(
+        f"  Percentile: p5={r['p5']:+d}, p25={r['p25']:+d}, p50={r['p50']:+d}, p75={r['p75']:+d}, p95={r['p95']:+d}"
+    )
+    print("  Quality dist (1~5등급, 현재 임계값 ≥8/5/2/-1):")
     total = sum(r["quality_dist"].values())
     for q in range(1, 6):
         cnt = r["quality_dist"].get(q, 0)
         pct = cnt / total * 100
         bar = "#" * int(pct / 2)
         print(f"    {q}등급: {cnt:5d} ({pct:5.2f}%) {bar}")
-    print(f"  부상 발생률: {r['injury_rate']*100:.2f}%")
+    print(f"  부상 발생률: {r['injury_rate'] * 100:.2f}%")
 
 
 def main() -> None:
     print(f"=== 품질 임계값 시뮬레이션 (각 {RUNS:,}회) ===")
-    print(f"현재 _quality_grade 임계값: total>=8→5등급, >=5→4, >=2→3, >=-1→2, 그 외→1\n")
+    print("현재 _quality_grade 임계값: total>=8→5등급, >=5→4, >=2→3, >=-1→2, 그 외→1\n")
 
     scenarios = [(20, 20), (50, 50), (70, 70)]
 

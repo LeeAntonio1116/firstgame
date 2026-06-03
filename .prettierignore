@@ -1,0 +1,12 @@
+# Prettier가 건드리지 않을 디렉토리·파일
+# Jinja2 템플릿은 djhtml이 별도 처리 (Prettier의 HTML 포매터는 Jinja 문법을 못 알아봄)
+templates/
+# SVG 자산은 손대지 않음 (자산 정책: SVG only, 처음부터 완성도)
+static/img/
+# Python 가상환경
+.venv/
+# 마이그레이션 SQL
+migrations/
+# 빌드·캐시
+__pycache__/
+*.pyc

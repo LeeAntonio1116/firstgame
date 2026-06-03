@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
+
 from database import db_select, db_update
 from routers.auth import get_current_user
 

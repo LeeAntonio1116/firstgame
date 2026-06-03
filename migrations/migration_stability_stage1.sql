@@ -1,0 +1,31 @@
+-- ============================================================
+-- 안정성·무결성 취약점 fix — 1단계 (결정론적 무결성) (2026-05-30)
+--   단일 출처: firstgame/안정성_취약점_진입가이드.md + wiki [[게임시스템_취약점_점검]]
+--
+-- 1단계 코드 변경(B-1·B-2/C-1/C-2/E-1/E-2/E-3/D-1·D-2/F-3) 중
+-- 스키마 변경이 필요한 항목은 D-1·D-2 단 하나다.
+--   - C-1 'processing' / E-3·C-4 'failed' 상태: commands.status·batches.status에 CHECK 제약이
+--     없어 마이그레이션 불필요 (자유 TEXT).
+--   - A-5(characters.user_id UNIQUE) / F-2(gold BIGINT)는 2~3단계에서 별도 적용.
+--
+-- 실행 위치: Supabase 대시보드 SQL Editor (통째로 실행). 안전망: IF NOT EXISTS — 재실행 OK.
+-- ============================================================
+
+-- ── D-1·D-2: buy 제출 시점 시세 동결 ──
+-- 거래 buy는 제출 시 결제하나 정산(배치)·환불(취소·해고)은 시세를 재조회해 금액이 어긋났다.
+-- 제출 시점 단가를 commands에 동결해 결제·정산·환불 모두 같은 값을 쓴다.
+-- NULL 허용 — 옛 pending row(컬럼 추가 전 제출)는 코드 측에서 created_at 일자 시세로 fallback.
+ALTER TABLE commands ADD COLUMN IF NOT EXISTS unit_price_at_submit INTEGER;
+
+-- ============================================================
+-- 검증 쿼리 (사용자가 SQL Editor에서 직접 실행)
+-- ============================================================
+-- 1) 컬럼 추가 확인
+-- SELECT column_name, data_type, is_nullable
+--   FROM information_schema.columns
+--   WHERE table_name = 'commands' AND column_name = 'unit_price_at_submit';
+--   (1 row, integer, YES 기대)
+--
+-- 2) 기존 pending row는 NULL (코드 fallback 대상) — 정상
+-- SELECT id, command_type, trade_action, unit_price_at_submit
+--   FROM commands WHERE status = 'pending';

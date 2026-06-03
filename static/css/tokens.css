@@ -1,0 +1,83 @@
+/*
+ * 디자인 시스템 토큰 — 묵빛 군막(墨色軍幕)
+ * 단일 출처: websimulgamewiki/10_Wiki/01_Technical/🎨 디자인/디자인_시스템.md
+ * 변경 시 wiki·plan/design_system.md·본 파일 3곳 동시 갱신
+ */
+
+:root {
+  /* ─── Root font size — 모든 rem 기반 크기의 기준 (기본 16px → 19px, +3px) ─── */
+  font-size: 19px;
+
+  /* ─── Base — 묵빛(먹색) ─── */
+  --color-bg: hsl(30, 12%, 7%);
+  --color-bg-elevated: hsl(30, 10%, 11%);
+  --color-panel: hsl(32, 14%, 14%);
+  --color-panel-border: hsl(38, 22%, 28%);
+  --color-panel-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.55);
+
+  /* ─── Accent — 촛불 황금 ─── */
+  --color-accent: hsl(42, 78%, 58%);
+  --color-accent-hover: hsl(42, 82%, 65%);
+  --color-accent-dim: hsl(42, 50%, 42%);
+
+  /* ─── Point — 주사(朱砂) 빨강 ─── */
+  --color-point: hsl(6, 70%, 48%);
+  --color-point-hover: hsl(6, 75%, 55%);
+  --color-point-dim: hsl(6, 55%, 36%);
+
+  /* ─── 부속색 — 청동 / 비취 ─── */
+  --color-bronze: hsl(28, 50%, 45%);
+  --color-jade: hsl(155, 50%, 42%);
+
+  /* ─── Text — 명도 4단계 ─── */
+  --color-text-primary: hsl(40, 30%, 92%);
+  --color-text-secondary: hsl(40, 18%, 78%);
+  --color-text-tertiary: hsl(38, 12%, 58%);
+  --color-text-disabled: hsl(36, 8%, 40%);
+
+  /* ─── Semantic — 의미 컬러 (rarity·accent와 hue 분리) ─── */
+  --color-success: var(--color-jade);
+  --color-warning: hsl(30, 85%, 55%);
+  --color-danger: var(--color-point);
+  --color-info: hsl(200, 45%, 58%);
+
+  /* ─── Rarity ★1~5 — 소재_체계 매핑 (semantic과 hue 분리) ─── */
+  --rarity-1: hsl(35, 8%, 55%);
+  --rarity-2: var(--color-bronze);
+  --rarity-3: hsl(195, 22%, 68%);
+  --rarity-4: hsl(355, 55%, 58%);
+  --rarity-5: hsl(45, 92%, 64%);
+
+  /* ─── Spacing — 8px 그리드 ─── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* ─── Radius ─── */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-pill: 9999px;
+
+  /* ─── Motion ─── */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ─── UI State ─── */
+  --state-hover-bg: rgba(232, 196, 130, 0.08);
+  --state-active-bg: rgba(232, 196, 130, 0.14);
+  --state-focus-ring: 0 0 0 2px hsla(42, 78%, 58%, 0.55);
+  --state-disabled-opacity: 0.45;
+  --state-loading-opacity: 0.6;
+  --state-error-bg: hsla(6, 70%, 48%, 0.08);
+  --state-error-border: hsla(6, 70%, 48%, 0.55);
+
+  /* ─── Texture — 양피지(parchment) ─── */
+  --texture-parchment: url("/static/img/parchment.svg");
+}

@@ -2,397 +2,116 @@
 {% block title %}대시보드 — 삼국지 길드{% endblock %}
 
 {% block extra_styles %}
-<style>
-  body { display: block; }
-
-  .app {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* ── 헤더 ── */
-  .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #16213e;
-    border-bottom: 2px solid #e94560;
-    padding: 0 1.5rem;
-    height: 56px;
-    flex-shrink: 0;
-  }
-  .header-logo {
-    color: #e94560;
-    font-size: 1.2rem;
-    font-weight: bold;
-    letter-spacing: 1px;
-  }
-  .header-countdown {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-  }
-  .header-countdown .cd-label {
-    font-size: 0.7rem;
-    color: #a0a0b0;
-    letter-spacing: 1px;
-  }
-  .header-countdown .cd-time {
-    font-size: 1.1rem;
-    color: #e94560;
-    font-weight: bold;
-    letter-spacing: 3px;
-    font-variant-numeric: tabular-nums;
-  }
-  .header-user {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    font-size: 0.85rem;
-    color: #a0a0b0;
-  }
-  .btn-logout {
-    background: #0f3460;
-    border: none;
-    border-radius: 4px;
-    color: #e0e0e0;
-    font-size: 0.8rem;
-    padding: 0.3rem 0.8rem;
-    cursor: pointer;
-    font-family: inherit;
-    width: auto;
-  }
-  .btn-logout:hover { background: #1a4a7a; }
-
-  /* ── 상단 탭 ── */
-  .top-tabs {
-    display: flex;
-    background: #0f3460;
-    border-bottom: 1px solid #1a4a7a;
-    padding: 0 1rem;
-    flex-shrink: 0;
-    gap: 2px;
-  }
-  .top-tab {
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: #a0a0b0;
-    font-size: 0.9rem;
-    padding: 0.6rem 1.2rem;
-    cursor: pointer;
-    font-family: inherit;
-    width: auto;
-    transition: color 0.15s, border-color 0.15s;
-    margin-bottom: -1px;
-  }
-  .top-tab:hover { color: #e0e0e0; background: transparent; }
-  .top-tab.active {
-    color: #e94560;
-    border-bottom-color: #e94560;
-    background: transparent;
-  }
-
-  /* ── 메인 레이아웃 ── */
-  .main-layout {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
-
-  /* ── 좌측 사이드바 ── */
-  .sidebar {
-    width: 180px;
-    background: #16213e;
-    border-right: 1px solid #0f3460;
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 0.5rem 0;
-  }
-  .sidebar-section { display: none; }
-  .sidebar-section.active { display: block; }
-  .sidebar-item {
-    display: block;
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-left: 3px solid transparent;
-    color: #a0a0b0;
-    font-size: 0.85rem;
-    text-align: left;
-    padding: 0.65rem 1rem;
-    cursor: pointer;
-    font-family: inherit;
-    transition: color 0.1s, border-color 0.1s, background 0.1s;
-  }
-  .sidebar-item:hover {
-    color: #e0e0e0;
-    background: #0f3460;
-    background-color: rgba(15, 52, 96, 0.4);
-  }
-  .sidebar-item.active {
-    color: #e94560;
-    border-left-color: #e94560;
-    background-color: rgba(233, 69, 96, 0.08);
-  }
-
-  /* ── 중앙 패널 ── */
-  .center-panel {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.2rem;
-    background: #1a1a2e;
-  }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  .panel-title {
-    color: #e94560;
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #0f3460;
-  }
-
-  /* 캐릭터 정보 */
-  .char-name { font-size: 1.4rem; color: #e0e0e0; margin-bottom: 1.2rem; }
-  .stat-list { display: flex; flex-direction: column; gap: 0.7rem; max-width: 400px; }
-  .stat-row { display: flex; align-items: center; gap: 0.6rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 4px; }
-  .stat-row:hover { background: rgba(233, 69, 96, 0.06); }
-  .stat-name { width: 3.5rem; font-size: 0.85rem; color: #a0a0b0; }
-  .stat-bar-bg { flex: 1; height: 8px; background: #0f3460; border-radius: 4px; overflow: hidden; }
-  .stat-bar-fill { height: 100%; background: #e94560; border-radius: 4px; }
-  .stat-value { width: 2.5rem; text-align: right; font-size: 0.9rem; color: #e0e0e0; }
-
-  /* 합계 / 부상 / 기술 섹션 */
-  .stat-total { color: #a0a0b0; font-size: 0.82rem; margin-top: 0.8rem; text-align: right; max-width: 400px; }
-  .injury-badge {
-    background: rgba(233, 69, 96, 0.12);
-    border: 1px solid #e94560;
-    border-radius: 4px;
-    color: #e94560;
-    font-size: 0.82rem;
-    padding: 0.4rem 0.8rem;
-    margin-top: 0.8rem;
-    max-width: 400px;
-  }
-  .section-divider { border: none; border-top: 1px solid #0f3460; margin: 1.2rem 0; max-width: 400px; }
-  .sub-section-title { color: #e94560; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.6rem; }
-  .skill-list { display: flex; flex-direction: column; gap: 0.5rem; max-width: 400px; }
-  .skill-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.15rem 0.4rem; }
-  .skill-name { width: 4rem; font-size: 0.82rem; color: #a0a0b0; }
-
-  /* 준비 중 */
-  .placeholder {
-    color: #a0a0b0;
-    font-size: 0.9rem;
-    text-align: center;
-    padding: 3rem 0;
-  }
-
-  /* ── 우측 보조 패널 ── */
-  .right-panel {
-    width: 240px;
-    background: #16213e;
-    border-left: 1px solid #0f3460;
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 1rem;
-  }
-  .right-content { display: none; }
-  .right-content.active { display: block; }
-  .right-title {
-    color: #e94560;
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin-bottom: 0.8rem;
-    padding-bottom: 0.4rem;
-    border-bottom: 1px solid #0f3460;
-  }
-  .right-empty {
-    color: #a0a0b0;
-    font-size: 0.8rem;
-    text-align: center;
-    padding: 2rem 0;
-  }
-
-  /* 스탯 설명 (우측 패널) */
-  .stat-desc-name { font-size: 1rem; color: #e0e0e0; margin-bottom: 0.4rem; }
-  .stat-desc-val { font-size: 1.6rem; color: #e94560; font-weight: bold; margin-bottom: 0.8rem; }
-  .stat-desc-text { font-size: 0.82rem; color: #a0a0b0; line-height: 1.6; }
-
-  /* 하단 계정관리 */
-  .account-bar {
-    border-top: 1px solid #0f3460;
-    background: #16213e;
-    padding: 0.5rem 1.5rem;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 0.82rem;
-  }
-  .account-bar details summary {
-    cursor: pointer;
-    color: #e94560;
-  }
-  .delete-form {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-  .delete-form input {
-    width: 160px;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.82rem;
-    margin-bottom: 0;
-  }
-  .btn-delete {
-    background: #7a1020;
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 0.82rem;
-    padding: 0.3rem 0.8rem;
-    cursor: pointer;
-    font-family: inherit;
-    width: auto;
-  }
-  .btn-delete:hover { background: #a01530; }
-
-  /* 대장간 시작 배너 */
-  .action-banner { background: rgba(233,69,96,0.08); border: 1px solid #e94560; border-radius: 6px; padding: 1rem; margin-bottom: 1.2rem; max-width: 400px; }
-  .action-banner p { color: #a0a0b0; font-size: 0.85rem; margin-bottom: 0.7rem; }
-  .btn-action { background: #e94560; border: none; border-radius: 4px; color: #fff; font-size: 0.9rem; padding: 0.4rem 1.2rem; cursor: pointer; font-family: inherit; width: auto; }
-  .btn-action:hover { background: #c73050; }
-
-  /* 통제실 */
-  .command-list { list-style: none; padding: 0; margin: 0 0 0.8rem 0; }
-  .command-list li { font-size: 0.82rem; color: #a0a0b0; padding: 0.3rem 0.2rem; border-bottom: 1px solid #0f3460; }
-  .form-row { display: flex; gap: 0.8rem; align-items: center; margin-bottom: 0.8rem; font-size: 0.85rem; }
-  .form-label { color: #a0a0b0; min-width: 3rem; }
-  .form-value { color: #e0e0e0; }
-  .placeholder-sm { color: #a0a0b0; font-size: 0.82rem; padding: 0.3rem 0; }
-
-  /* 우편함 */
-  .mail-list { display: flex; flex-direction: column; gap: 0.4rem; }
-  .mail-item { background: rgba(15,52,96,0.3); border: 1px solid #0f3460; border-radius: 6px; overflow: hidden; }
-  .mail-header { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; cursor: pointer; }
-  .mail-header:hover { background: rgba(233,69,96,0.06); }
-  .mail-title { font-size: 0.88rem; color: #e0e0e0; }
-  .mail-date { font-size: 0.75rem; color: #a0a0b0; }
-  .mail-detail { padding: 0.6rem 0.8rem; border-top: 1px solid #0f3460; }
-  .result-table { width: 100%; font-size: 0.8rem; border-collapse: collapse; margin-bottom: 0.6rem; }
-  .result-table th { color: #e94560; padding: 0.25rem 0.4rem; text-align: left; border-bottom: 1px solid #0f3460; }
-  .result-table td { color: #e0e0e0; padding: 0.25rem 0.4rem; border-bottom: 1px solid rgba(15,52,96,0.5); }
-  .quality-result { font-size: 0.88rem; color: #e0e0e0; }
-  .quality-result strong { color: #e94560; font-size: 1rem; }
-  .injury-warn { margin-top: 0.4rem; color: #e94560; font-size: 0.82rem; }
-</style>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
 {% endblock %}
 
 {% block content %}
-<div class="app">
+  <div class="app">
 
   <!-- 헤더 -->
-  <header class="app-header">
-    <div class="header-logo">⚔️ 삼국지 길드</div>
-    <div class="header-countdown">
-      <span class="cd-label">다음 배치</span>
-      <span class="cd-time" id="countdown">--:--:--</span>
-    </div>
-    <div class="header-user">
-      {% if character %}
-      <span>{{ character.name }}({{ username }})</span>
-      {% else %}
-      <span>{{ username }}</span>
-      {% endif %}
-      <a href="/logout"><button class="btn-logout">로그아웃</button></a>
-    </div>
-  </header>
+    <header class="app-header">
+      <div class="header-logo">⚔️ 삼국지 길드</div>
+      <div class="header-countdown">
+        <span class="cd-label">다음 배치</span>
+        <span class="cd-time" id="countdown">--:--:--</span>
+      </div>
+      <div class="header-user">
+        <span class="header-gold num" title="보유 자금">💰 {{ user_gold | gold }}</span>
+        {% if character %}
+          <span>{{ character.name }}({{ username }})</span>
+        {% else %}
+          <span>{{ username }}</span>
+        {% endif %}
+        {% if is_admin %}
+          <a href="/admin"><button class="btn-logout">🔧 관리자 패널</button></a>
+        {% endif %}
+        <form method="post" action="/logout">
+          <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+          <button class="btn-logout">로그아웃</button>
+        </form>
+      </div>
+    </header>
 
   <!-- 상단 메인 탭 -->
-  <nav class="top-tabs">
-    <button class="top-tab active" onclick="switchSection('blacksmith')">대장간</button>
-    <button class="top-tab" onclick="switchSection('mailbox')">우편함</button>
-    <button class="top-tab" onclick="switchSection('plaza')">중앙광장</button>
-  </nav>
+    <nav class="top-tabs">
+      <button class="top-tab active" onclick="switchSection('blacksmith')">대장간</button>
+      <button class="top-tab" onclick="switchSection('mailbox')">우편함</button>
+      <button class="top-tab" onclick="switchSection('plaza')">중앙광장</button>
+    </nav>
 
   <!-- 3열 메인 레이아웃 -->
-  <div class="main-layout">
+    <div class="main-layout">
 
     <!-- 좌측 사이드바 -->
-    <aside class="sidebar">
+      <aside class="sidebar">
 
       <!-- 대장간 사이드 탭 -->
-      <div class="sidebar-section active" id="sidebar-blacksmith">
-        <button class="sidebar-item active" onclick="switchTab('character')">캐릭터 정보</button>
-        <button class="sidebar-item" onclick="switchTab('employees')">고용인 목록</button>
-        <button class="sidebar-item" onclick="switchTab('storage')">창고</button>
-        <button class="sidebar-item" onclick="switchTab('workshop')">작업실</button>
-        <button class="sidebar-item" onclick="switchTab('control')">통제실</button>
-      </div>
+        <div class="sidebar-section active" id="sidebar-blacksmith">
+          <button class="sidebar-item active" onclick="switchTab('character')">캐릭터 정보</button>
+          <button class="sidebar-item" onclick="switchTab('employees')">고용인 목록</button>
+          <button class="sidebar-item" onclick="switchTab('storage')">창고</button>
+          <button class="sidebar-item" onclick="switchTab('workshop')">작업실</button>
+          <button class="sidebar-item" onclick="switchTab('control')">통제실</button>
+        </div>
 
       <!-- 우편함 사이드 탭 -->
-      <div class="sidebar-section" id="sidebar-mailbox">
-        <button class="sidebar-item active" onclick="switchTab('mailbox-inbox')">받은 편지함</button>
-      </div>
+        <div class="sidebar-section" id="sidebar-mailbox">
+          <button class="sidebar-item active" onclick="switchTab('mailbox-inbox')">대장간 결과</button>
+          <button class="sidebar-item" onclick="switchTab('mailbox-trade')">거래 내역</button>
+          <button class="sidebar-item" onclick="switchTab('mailbox-growth')">성장 보고</button>
+        </div>
 
       <!-- 중앙광장 사이드 탭 -->
-      <div class="sidebar-section" id="sidebar-plaza">
-        <button class="sidebar-item active" onclick="switchTab('plaza-main')">광장</button>
-      </div>
+        <div class="sidebar-section" id="sidebar-plaza">
+          <button class="sidebar-item active" onclick="switchTab('plaza-main')">광장</button>
+        </div>
 
-    </aside>
+      </aside>
 
     <!-- 중앙 패널 -->
-    <main class="center-panel">
+      <main class="center-panel">
 
       <!-- 대장간: 캐릭터 정보 -->
-      <div class="tab-content active" id="content-character">
-        <div class="panel-title">캐릭터 정보</div>
-        {% if character and not character.has_blacksmith %}
-        <div class="action-banner">
-          <p>아직 대장간 사업을 시작하지 않았습니다. 사업을 시작해야 명령서를 제출할 수 있습니다.</p>
-          <form method="post" action="/blacksmith/start">
-            <button type="submit" class="btn-action">대장간 시작</button>
-          </form>
-        </div>
-        {% endif %}
-        {% if character %}
-        <div class="char-name">{{ character.name }}</div>
-        <div class="stat-list">
-          {% for label, key, val in [
-            ('무력', 'strength', character.strength),
-            ('지략', 'intelligence', character.intelligence),
-            ('매력', 'charisma', character.charisma),
-            ('통솔', 'leadership', character.leadership),
-            ('건강', 'health', character.health),
-            ('운', 'luck', character.luck)
-          ] %}
-          <div class="stat-row" onclick="showStatDesc('{{ label }}', {{ val }})">
-            <span class="stat-name">{{ label }}</span>
-            <div class="stat-bar-bg">
-              <div class="stat-bar-fill" style="width: {{ (val / 75 * 100) | int }}%"></div>
+        <div class="tab-content active" id="content-character">
+          <div class="panel-title">캐릭터 정보</div>
+          {% if character and not character.has_blacksmith %}
+            <div class="action-banner">
+              <p>아직 대장간 사업을 시작하지 않았습니다. 사업을 시작해야 명령서를 제출할 수 있습니다.</p>
+              <form method="post" action="/blacksmith/start">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                <button type="submit" class="btn-primary">대장간 시작</button>
+              </form>
             </div>
-            <span class="stat-value">{{ val }}</span>
-          </div>
+          {% endif %}
+          {% if character %}
+            <div class="char-name">{{ character.name }}</div>
+            <div class="stat-list">
+              {% for label, key, val in [
+              ('무력', 'strength', character.strength),
+              ('지략', 'intelligence', character.intelligence),
+              ('매력', 'charisma', character.charisma),
+              ('건강', 'health', character.health),
+              ('운', 'luck', character.luck),
+              ('민첩', 'dexterity', character.get('dexterity', 50))
+              ] %}
+              <div class="stat-row" onclick="showStatDesc('{{ label }}', {{ val }})">
+                <span class="stat-name">{{ label }}</span>
+                <div class="stat-bar-bg">
+                  <div class="stat-bar-fill" style="width: {{ [(val / 95 * 100) | int, 100] | min }}%"></div>
+                </div>
+                <span class="stat-value">{{ val }}</span>
+              </div>
           {% endfor %}
         </div>
 
         <div class="stat-total">
-          합계: {{ character.strength + character.intelligence + character.charisma + character.leadership + character.health + character.luck }} / 350
+          합계: {{ character.strength + character.intelligence + character.charisma + character.health + character.luck + character.get('dexterity', 50) }} / 355
         </div>
 
         {% if character.is_serious_injured %}
-        <div class="injury-badge">🩹 중상 — 명령 제출 불가, {{ character.serious_injury_remaining }}배치 후 회복</div>
+          <div class="injury-badge">🩹 중상 — 명령 제출 불가, {{ character.serious_injury_remaining }}배치 후 회복</div>
         {% elif character.is_injured %}
-        <div class="injury-badge">⚠ 부상 중 — 모든 판정에 -20 패널티 (도박 가능)</div>
+          <div class="injury-badge">⚠ 부상 중 — 모든 판정에 -20 패널티 (도박 가능)</div>
         {% endif %}
 
         <hr class="section-divider">
@@ -400,10 +119,10 @@
         <div class="sub-section-title">대장간 기술</div>
         <div class="skill-list">
           {% for label, key in [
-            ('제련', 'smelting'),
-            ('단조', 'forging'),
-            ('열처리', 'heat_treat'),
-            ('마감', 'finishing')
+          ('제련', 'smelting'),
+          ('단조', 'forging'),
+          ('열처리', 'heat_treat'),
+          ('마감', 'finishing')
           ] %}
           {% set val = character_skills.get(key, 0) %}
           <div class="skill-row">
@@ -413,297 +132,716 @@
             </div>
             <span class="stat-value">{{ val }}%</span>
           </div>
-          {% endfor %}
-        </div>
+{% endfor %}
+</div>
 
-        <div class="sub-section-title" style="margin-top: 1.2rem;">소재 숙련도</div>
-        <div class="skill-list">
-          {% set material_labels = {
-            'raw_iron': '생철광', 'magnetite': '자철석',
-            'chalcopyrite': '황동광', 'malachite': '공작석',
-            'cassiterite': '석석', 'galena': '방연석',
-            'placer_gold': '사금', 'silver_ore': '은광석',
-            'meteorite_iron': '운석철', 'cinnabar': '단사',
-            'bronze': '청동', 'steel': '강철',
-            'white_copper': '백동', 'heaven_iron': '천철'
-          } %}
-          {% for code, val in mat_proficiency.items() | sort %}
-          <div class="skill-row">
-            <span class="skill-name">{{ material_labels.get(code, code) }}</span>
-            <div class="stat-bar-bg">
-              <div class="stat-bar-fill" style="width: {{ val }}%"></div>
-            </div>
-            <span class="stat-value">{{ val }}%</span>
+<div class="sub-section-title" style="margin-top: var(--space-4);">공용 기술</div>
+<div class="skill-list">
+  {% set tm_val = character_skills.get('talent_management', 0) %}
+  <div class="skill-row">
+    <span class="skill-name">인재관리</span>
+    <div class="stat-bar-bg">
+      <div class="stat-bar-fill" style="width: {{ tm_val }}%"></div>
+    </div>
+    <span class="stat-value">{{ tm_val }}%</span>
+  </div>
+</div>
+
+<div class="sub-section-title" style="margin-top: var(--space-4);">소재 숙련도</div>
+<div class="skill-list">
+  {% set material_labels = {
+  'raw_iron': '생철광', 'magnetite': '자철석',
+  'chalcopyrite': '황동광', 'malachite': '공작석',
+  'cassiterite': '석석', 'galena': '방연석',
+  'placer_gold': '사금', 'silver_ore': '은광석',
+  'meteorite_iron': '운석철', 'cinnabar': '단사',
+  'bronze': '청동', 'steel': '강철',
+  'white_copper': '백동', 'heaven_iron': '천철'
+  } %}
+  {% for code, val in mat_proficiency.items() | sort %}
+    <div class="skill-row">
+      <span class="skill-name">{{ material_labels.get(code, code) }}</span>
+      <div class="stat-bar-bg">
+        <div class="stat-bar-fill" style="width: {{ val }}%"></div>
+      </div>
+      <span class="stat-value">{{ val }}%</span>
+    </div>
+  {% endfor %}
+</div>
+
+{% endif %}
+</div>
+
+      <!-- 대장간: 고용인 목록 (P5) -->
+<div class="tab-content" id="content-employees">
+  <div class="panel-title">고용인 목록</div>
+  <div class="sub-section-title">현재 고용 NPC ({{ hired_npcs | length }}명)</div>
+  {% if hired_npcs %}
+    <div class="npc-card-grid">
+      {% for npc in hired_npcs %}
+        <div class="panel-card npc-card" data-npc-id="{{ npc.id }}" onclick="showHiredNpcDetail('{{ npc.id }}')">
+          <div class="npc-card-name">{{ npc.name }}
+            {% if npc.is_serious_injured %}<span class="injury-badge">🩹 중상</span>
+            {% elif npc.is_injured %}<span class="injury-badge">⚠ 부상</span>{% endif %}
           </div>
-          {% endfor %}
+          <div class="npc-card-stats">
+            무 {{ npc.stats.strength }} · 지 {{ npc.stats.intelligence }} · 매 {{ npc.stats.charisma }} ·
+            건 {{ npc.stats.health }} · 운 {{ npc.stats.luck }} · 민 {{ npc.stats.dexterity }}
+          </div>
+          <div class="npc-card-meta">스태미너 {{ npc.stamina_current }}/{{ npc.stamina_max }} · 수수료 {{ npc.fee_per_batch | gold }}</div>
         </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="placeholder-sm">고용한 NPC가 없습니다. 아래 후보 풀에서 영입하세요.</div>
+  {% endif %}
+  <hr class="section-divider">
+  <div class="sub-section-title">고용 후보 ({{ npc_candidates | length }}명, 다음 배치 후 갱신)</div>
+  {% if npc_candidates %}
+    <div class="npc-card-grid">
+      {% for cand in npc_candidates %}
+        <div class="panel-card npc-card candidate" data-cand-id="{{ cand.id }}" onclick="showCandidateDetail('{{ cand.id }}')">
+          <div class="npc-card-name">{{ cand.name }}</div>
+          <div class="npc-card-stats">
+            무 {{ cand.stats.strength }} · 지 {{ cand.stats.intelligence }} · 매 {{ cand.stats.charisma }} ·
+            건 {{ cand.stats.health }} · 운 {{ cand.stats.luck }} · 민 {{ cand.stats.dexterity }}
+          </div>
+          <div class="npc-card-meta">합 {{ cand.stat_total }} · 영입 {{ cand.hire_cost | gold }} · 수수료 {{ cand.fee | gold }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="placeholder-sm">후보 풀이 비어 있습니다. 다음 배치에서 자동 생성됩니다.</div>
+  {% endif %}
+</div>
 
-        {% endif %}
-      </div>
+      <!-- 대장간: 창고 (P3-4 확장) -->
+<div class="tab-content" id="content-storage">
+  <div class="panel-title">창고</div>
+  <div class="warehouse-cat-tabs">
+    <button type="button" class="cat-tab active" data-cat="all" onclick="setWarehouseCat('all')">
+      전체 <span class="cat-badge" data-cat-count="all">0</span>
+    </button>
+    {% for cat in category_order %}
+      <button type="button" class="cat-tab" data-cat="{{ cat }}" onclick="setWarehouseCat('{{ cat }}')">
+        {{ category_labels[cat] }} <span class="cat-badge" data-cat-count="{{ cat }}">0</span>
+      </button>
+    {% endfor %}
+  </div>
+  <div class="warehouse-filter">
+    <input id="warehouse-search" type="text" placeholder="검색 (이름·소재·등급)" oninput="onWarehouseSearch()">
+    <select id="warehouse-sort" onchange="onWarehouseSort()">
+      <option value="created_desc">제작일 ↓</option>
+      <option value="created_asc">제작일 ↑</option>
+      <option value="quality_desc">품질 ↓</option>
+      <option value="quality_asc">품질 ↑</option>
+      <option value="quantity_desc">수량 ↓</option>
+      <option value="quantity_asc">수량 ↑</option>
+    </select>
+  </div>
+  <table class="warehouse-table" id="warehouse-items">
+    <thead>
+      <tr>
+        <th class="col-name">이름</th>
+        <th class="col-quality">품질</th>
+        <th class="col-quantity">수량</th>
+      </tr>
+    </thead>
+    <tbody id="warehouse-tbody"></tbody>
+  </table>
+  <div class="placeholder" id="warehouse-empty" style="display:none;">표시할 아이템이 없습니다.</div>
+</div>
 
-      <!-- 대장간: 고용인 목록 -->
-      <div class="tab-content" id="content-employees">
-        <div class="panel-title">고용인 목록</div>
-        <div class="placeholder">준비 중입니다.</div>
-      </div>
-
-      <!-- 대장간: 창고 -->
-      <div class="tab-content" id="content-storage">
-        <div class="panel-title">창고</div>
-        {% if items %}
-        <table class="result-table">
-          <tr><th>이름</th><th>품질</th><th>수량</th><th>최초 제작</th></tr>
-          {% for item in items %}
-          <tr>
-            <td>{{ material_labels.get(item.material, item.material) }} {{ item_type_labels.get(item.item_type, item.item_type) }}</td>
-            <td>{{ item.quality }}등급</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.created_at[:10] }}</td>
-          </tr>
+      <!-- 대장간: 작업실 (명령서 제출) -->
+<div class="tab-content" id="content-workshop">
+  <div class="panel-title">작업실</div>
+  {% if not character or not character.has_blacksmith %}
+    <div class="placeholder">대장간을 먼저 시작해야 합니다.</div>
+  {% else %}
+    {% if submit_warning %}
+      <div class="cmd-warning-banner">⚠ {{ submit_warning }}</div>
+    {% endif %}
+    <div class="sub-section-title">명령서 제출</div>
+    <form method="post" action="/commands/submit">
+      <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+      <div class="form-row">
+        <span class="form-label">담당</span>
+        <select name="target_character_id" id="cmd-character" class="form-select" required onchange="onCommandActorChange()">
+          {% for opt in character_options %}
+            <option value="{{ opt.id }}"{% if opt.disabled %} disabled{% endif %}>
+              {{ opt.name }}{% if opt.disabled %} (중상 — 명령 불가){% endif %}
+            </option>
           {% endfor %}
-        </table>
-        {% else %}
-        <div class="placeholder">보유 아이템이 없습니다.</div>
-        {% endif %}
+        </select>
       </div>
-
-      <!-- 대장간: 작업실 -->
-      <div class="tab-content" id="content-workshop">
-        <div class="panel-title">작업실</div>
-        <div class="placeholder">준비 중입니다.</div>
+      <div class="form-row">
+        <span class="form-label">작업</span>
+        <label class="work-radio"><input type="radio" name="work_type" value="ingot" checked onchange="onWorkTypeChange()"> 주괴 제작</label>
+        <label class="work-radio"><input type="radio" name="work_type" value="weapon" onchange="onWorkTypeChange()"> 무기 제작</label>
+        <label class="work-radio"><input type="radio" name="work_type" value="alloy" onchange="onWorkTypeChange()"> 합금주괴 제작</label>
       </div>
+      <div class="form-row" id="cmd-weapon-row" style="display:none;">
+        <span class="form-label">무기</span>
+        <select name="weapon_category" id="cmd-weapon" class="form-select" onchange="onWeaponChange()">
+          {% for wc in weapon_codes %}
+            <option value="{{ wc }}">{{ weapon_labels[wc] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-row">
+        <span class="form-label">소재</span>
+        <select name="material_input" id="cmd-material" class="form-select" required onchange="onMaterialChange()"></select>
+      </div>
+      <div class="form-row">
+        <span class="form-label">품질</span>
+        <select name="input_quality" id="cmd-quality-grade" class="form-select" onchange="updateCommandInfo()"></select>
+      </div>
+      <div class="form-row">
+        <span class="form-label">수량</span>
+        <input type="number" name="quantity" id="cmd-quantity" class="form-input" min="0" step="1" value="1" required
+               oninput="onQuantityInput()" onchange="updateCommandInfo()">
+      </div>
+      <button type="submit" id="cmd-submit" class="btn-primary">제출</button>
+      <span id="cmd-warning" class="cmd-warning" style="display:none;"></span>
+    </form>
 
-      <!-- 대장간: 통제실 -->
-      <div class="tab-content" id="content-control">
-        <div class="panel-title">통제실</div>
-        {% if not character or not character.has_blacksmith %}
-        <div class="placeholder">대장간을 먼저 시작해야 합니다.</div>
-        {% else %}
-        <div class="sub-section-title">대기 중인 명령 ({{ pending_commands | length }})</div>
-        {% if pending_commands %}
-        <ul class="command-list">
-          {% for cmd in pending_commands %}
-          <li>{{ cmd.created_at[:10] }} — 철 대장간 작업</li>
+    <hr class="section-divider">
+    <div class="sub-section-title">제출 명령 정보</div>
+    <div class="cmd-info-panel">
+      <div class="form-row"><span class="form-label">담당</span><span class="form-value" id="info-name">—</span></div>
+      <div class="form-row"><span class="form-label">결과물</span><span class="form-value" id="info-result">—</span></div>
+      <div class="form-row"><span class="form-label">스태미너</span><span class="form-value" id="info-stamina">—</span></div>
+      <div class="form-row"><span class="form-label">공정 스킬</span><span class="form-value" id="info-craft-skills">—</span></div>
+      <div class="form-row"><span class="form-label">소재 스킬</span><span class="form-value" id="info-mat-skill">—</span></div>
+      <div class="form-row"><span class="form-label">소모 소재</span><span class="form-value" id="info-mat-cost">—</span></div>
+      <div class="form-row"><span class="form-label">재료 품질 보너스</span><span class="form-value" id="info-quality-bonus">—</span></div>
+      <div class="form-row"><span class="form-label">예상 지출</span><span class="form-value" id="info-fee">—</span></div>
+    </div>
+
+    <script src="/static/js/workshop_form.js" defer></script>
+  {% endif %}
+</div>
+
+      <!-- 대장간: 통제실 (pending 명령 통합 조회·취소 허브) -->
+<div class="tab-content" id="content-control">
+  <div class="panel-title">통제실</div>
+  {% if not character or not character.has_blacksmith %}
+    <div class="placeholder">대장간을 먼저 시작해야 합니다.</div>
+  {% else %}
+    <div class="form-row">
+      <span class="form-label">다음 배치</span>
+      <span class="form-value"><span id="control-countdown">--:--:--</span> (KST {{ batch_hours_kst | join(':00, ') }}:00)</span>
+    </div>
+    <div class="form-row">
+      <span class="form-label">대기 명령</span>
+      <span class="form-value">{{ pending_commands | length }}건</span>
+    </div>
+    <hr class="section-divider">
+    {% if pending_groups %}
+      {% for owner_id, cmds in pending_groups.items() %}
+        {% set owner_name = cmds[0].character_name if cmds else owner_id %}
+        <div class="sub-section-title">{{ owner_name }} ({{ cmds | length }}건)</div>
+        <ul class="command-list control-command-list">
+          {% for cmd in cmds %}
+            <li class="panel-card control-command-item" data-cmd-id="{{ cmd.id }}" onclick="showCommandDetail('{{ cmd.id }}')">
+              <span class="cmd-time">{{ cmd.created_at[11:16] if cmd.created_at and cmd.created_at|length >= 16 else cmd.created_at[:10] }}</span>
+              <span class="cmd-result">{{ cmd.result_label }}</span>
+              <span class="cmd-meta">스태미너 {{ cmd.reserved_stamina }}{% if cmd.reserved_gold %} · {{ cmd.reserved_gold | gold }}{% endif %}</span>
+            </li>
           {% endfor %}
         </ul>
-        {% else %}
-        <div class="placeholder-sm">대기 중인 명령이 없습니다.</div>
-        {% endif %}
-        <hr class="section-divider">
-        <div class="sub-section-title">명령서 제출</div>
-        <form method="post" action="/commands/submit">
-          <div class="form-row">
-            <span class="form-label">소재</span>
-            <span class="form-value">철 (iron) — Phase 1 고정</span>
-          </div>
-          <button type="submit" class="btn-action">제출</button>
-        </form>
-        {% endif %}
-      </div>
+      {% endfor %}
+    {% else %}
+      <div class="placeholder-sm">대기 중인 명령이 없습니다. 작업실에서 명령서를 제출하세요.</div>
+    {% endif %}
+  {% endif %}
+</div>
 
-      <!-- 우편함 -->
-      <div class="tab-content" id="content-mailbox-inbox">
-        <div class="panel-title">받은 편지함</div>
-        {% if mailbox %}
-        {% set skill_labels = {'smelting': '제련', 'forging': '단조', 'heat_treat': '열처리', 'finishing': '마감', 'appraisal': '감별'} %}
-        {% set mat_labels_mb = {
-          'raw_iron': '생철광', 'magnetite': '자철석',
-          'chalcopyrite': '황동광', 'malachite': '공작석',
-          'cassiterite': '석석', 'galena': '방연석',
-          'placer_gold': '사금', 'silver_ore': '은광석',
-          'meteorite_iron': '운석철', 'cinnabar': '단사',
-          'bronze': '청동', 'steel': '강철',
-          'white_copper': '백동', 'heaven_iron': '천철'
-        } %}
-        <div class="mail-list">
-          {% for mail in mailbox %}
-          <div class="mail-item">
-            <div class="mail-header" onclick="toggleMailDetail('mail-{{ loop.index }}')">
+      <!-- 우편함: 대장간 결과 -->
+<div class="tab-content" id="content-mailbox-inbox">
+  <div class="panel-title">대장간 결과</div>
+  {# 결과 레벨 한글→영문 클래스 매핑 (CSS .lv-{key} 적용용) #}
+  {% set lv_class = {
+  '대성공': 'lv-crit-succ', '극단적_성공': 'lv-extreme-succ',
+  '어려운_성공': 'lv-hard-succ', '일반_성공': 'lv-normal-succ',
+  '실패': 'lv-fail', '대실패': 'lv-crit-fail'
+  } %}
+  {% if blacksmith_mail %}
+    {% set skill_labels = {'smelting': '제련', 'forging': '단조', 'heat_treat': '열처리', 'finishing': '마감', 'appraisal': '감별'} %}
+    {% set mat_labels_mb = {
+    'raw_iron': '생철광', 'magnetite': '자철석',
+    'chalcopyrite': '황동광', 'malachite': '공작석',
+    'cassiterite': '석석', 'galena': '방연석',
+    'placer_gold': '사금', 'silver_ore': '은광석',
+    'meteorite_iron': '운석철', 'cinnabar': '단사',
+    'bronze': '청동', 'steel': '강철',
+    'white_copper': '백동', 'heaven_iron': '천철'
+    } %}
+    <div class="mail-list">
+      {% for mail in blacksmith_mail %}
+        <div class="mail-item">
+          <div class="mail-header" onclick="toggleMailDetail('mail-bs-{{ loop.index }}')">
+            <div class="mail-title-line">
               <span class="mail-title">{{ mail.title }}</span>
-              <span class="mail-date">{{ mail.created_at[:10] }}</span>
+              {% if mail.body and mail.body.get('character_name') %}
+                <span class="mail-actor">👤 {{ mail.body.get('character_name') }}</span>
+              {% endif %}
             </div>
-            <div class="mail-detail" id="mail-{{ loop.index }}" style="display:none">
-              {% if mail.body and mail.body.get('process_results') %}
+            <span class="mail-date">{{ mail.created_at[:10] }}</span>
+          </div>
+          <div class="mail-detail" id="mail-bs-{{ loop.index }}" style="display:none">
+            {% if mail.body and mail.body.get('process_results') %}
               <table class="result-table">
                 <tr><th>단계</th><th>공정 판정</th><th>소재 판정</th><th>소계</th></tr>
                 {% for step in mail.body.process_results %}
-                <tr>
-                  <td>{{ step.step }}</td>
-                  <td>{{ step.craft.roll }} ({{ step.craft.level }}, {{ step.craft.points }})</td>
-                  <td>{% if step.material %}{{ step.material.roll }} ({{ step.material.level }}, {{ step.material.points }}){% else %}—{% endif %}</td>
-                  <td>{{ step.step_points if step.step_points is defined else '—' }}</td>
-                </tr>
+                  <tr>
+                    <td>{{ step.step }}</td>
+                    <td>{{ step.craft.roll }} (<span class="{{ lv_class.get(step.craft.level, '') }}">{{ step.craft.level }}</span>, {{ step.craft.points }})</td>
+                    <td>{% if step.material %}{{ step.material.roll }} (<span class="{{ lv_class.get(step.material.level, '') }}">{{ step.material.level }}</span>, {{ step.material.points }}){% else %}—{% endif %}</td>
+                    <td>{{ step.step_points if step.step_points is defined else '—' }}</td>
+                  </tr>
                 {% endfor %}
               </table>
-              <div class="quality-result">누적 포인트: {{ mail.body.total_points }} → 최종 품질 <strong>{{ mail.body.quality }}등급</strong></div>
-              {% set growth = mail.body.get('growth_log') %}
-              {% if growth %}
-                {% if growth.material %}
-                  {% set m = growth.material %}
-                  <div class="growth-result">
-                    소재 숙련도 성장 판정: {{ mat_labels_mb.get(m.name, m.name) }} {{ m.before }} → {{ m.after }}
-                    {% if m.success %}<span style="color:#5ed666">✓ 성장</span>{% else %}<span style="color:#999">(실패)</span>{% endif %}
-                  </div>
-                {% endif %}
-                {% if growth.skills %}
-                  <div class="growth-result">
-                    기술치 성장 판정:
-                    {% for s in growth.skills %}
-                      {{ skill_labels.get(s.name, s.name) }} {{ s.before }} → {{ s.after }}
-                      {% if s.success %}<span style="color:#5ed666">✓</span>{% else %}<span style="color:#999">(실패)</span>{% endif %}{% if not loop.last %} / {% endif %}
-                    {% endfor %}
-                  </div>
-                {% endif %}
+              {% set qb = mail.body.get('quality_bonus', 0) %}
+              {% set iq = mail.body.get('input_quality', (qb + 1) if qb > 0 else 0) %}
+              <div class="quality-result">{% if iq >= 1 %}재료 {{ iq }}등급 (보너스 +{{ qb }}) / 공정 {{ mail.body.total_points - qb }} → {% endif %}누적 포인트: {{ mail.body.total_points }} → 최종 품질 <strong>{{ mail.body.quality }}등급</strong></div>
+              {# P6 S2-C: 성장 정보는 별도 "성장 보고" 탭에서 통합 표시 #}
+              {# P6 S2-B v2: 후처리 재굴림 사용 표시 #}
+              {% if mail.body.get('reroll_log') %}
+                <div class="reroll-log-box">
+                  <div class="reroll-log-title">🎲 재굴림 사용 {{ mail.body.reroll_log|length }}건</div>
+                  {% for rl in mail.body.reroll_log %}
+                    <div class="reroll-log-row">
+                      <span class="reroll-step">{{ rl.step }}</span>
+                      <span class="reroll-layer">{{ '공정' if rl.layer == 'craft' else '소재' }}</span>
+                      <span class="reroll-roll">{{ rl.orig_roll }} → {{ rl.new_roll }}</span>
+                      <span class="reroll-level">
+                        <span class="{{ lv_class.get(rl.orig_level, '') }}">{{ rl.orig_level }}</span>
+                        →
+                        <span class="{{ lv_class.get(rl.new_level, '') }}">{{ rl.new_level }}</span>
+                      </span>
+                    </div>
+                  {% endfor %}
+                </div>
               {% endif %}
               {% if mail.body.get('is_injured') %}
-              <div class="injury-warn">⚠ 부상 발생 — 작업이 중단되었습니다.</div>
+                <div class="injury-warn">⚠ 부상 발생 — 작업이 중단되었습니다.</div>
               {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="placeholder">아직 대장간 결과가 없습니다.</div>
+  {% endif %}
+</div>
+
+      <!-- 우편함: 성장 보고 (P6 S2-C) -->
+<div class="tab-content" id="content-mailbox-growth">
+  <div class="panel-title">성장 보고</div>
+  {% set stat_labels = {
+  'strength': '무력', 'intelligence': '지략', 'charisma': '매력',
+  'leadership': '통솔', 'health': '건강', 'luck': '운', 'dexterity': '민첩'
+  } %}
+  {% set skill_labels_g = {
+  'smelting': '제련', 'forging': '단조', 'heat_treat': '열처리',
+  'finishing': '마감', 'appraisal': '감별', 'talent_management': '인재관리'
+  } %}
+  {% set mat_labels_g = {
+  'raw_iron': '생철광', 'magnetite': '자철석',
+  'chalcopyrite': '황동광', 'malachite': '공작석',
+  'cassiterite': '석석', 'galena': '방연석',
+  'placer_gold': '사금', 'silver_ore': '은광석',
+  'meteorite_iron': '운석철', 'cinnabar': '단사',
+  'bronze': '청동', 'steel': '강철',
+  'white_copper': '백동', 'heaven_iron': '천철'
+  } %}
+  {% if growth_mail %}
+    <div class="mail-list">
+      {% for mail in growth_mail %}
+        {% set gb = mail.body %}
+        <div class="mail-item">
+          <div class="mail-header" onclick="toggleMailDetail('mail-gr-{{ loop.index }}')">
+            <div class="mail-title-line">
+              <span class="mail-title">{{ mail.title }}</span>
+              {% if gb and gb.get('character_name') %}
+                <span class="mail-actor">👤 {{ gb.get('character_name') }}</span>
               {% endif %}
             </div>
+            <span class="mail-date">{{ mail.created_at[:10] }}</span>
           </div>
-          {% endfor %}
+          <div class="mail-detail" id="mail-gr-{{ loop.index }}" style="display:none">
+            {# 1. +1 발생 항목 (이번 배치에 누적 도달분이 올라감) #}
+            {% if gb.get('growths') %}
+              <div class="growth-section growth-section--up">
+                <div class="growth-section-title">✨ 능력치 상승 ({{ gb.growths|length }}건)</div>
+                <ul class="growth-list">
+                  {% for g in gb.growths %}
+                    <li>
+                      {% if g.kind == 'stat' %}{{ stat_labels.get(g.name, g.name) }}{% elif g.kind == 'skill' %}{{ skill_labels_g.get(g.name, g.name) }}{% elif g.kind == 'material' %}{{ mat_labels_g.get(g.name, g.name) }}{% endif %}
+                      <strong>{{ g.before }} → {{ g.after }}</strong>
+                      <span class="growth-kind-badge">{{ {'stat':'스탯','skill':'기술','material':'숙련도'}.get(g.kind, g.kind) }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            {# 2. 이번 배치에 누적된 경험치 (실패 판정 누적) #}
+            {% if gb.get('stat_accs') or gb.get('skill_accs') or gb.get('material_accs') %}
+              <div class="growth-section growth-section--acc">
+                <div class="growth-section-title">📊 경험치 누적 (실패 판정에서만)</div>
+                {% if gb.get('stat_accs') %}
+                  <div class="growth-row"><span class="gr-label">스탯</span>
+                    {% for name, n in gb.stat_accs.items() %}{{ stat_labels.get(name, name) }} +{{ n }}{% if not loop.last %} / {% endif %}{% endfor %}
+                  </div>
+                {% endif %}
+                {% if gb.get('skill_accs') %}
+                  <div class="growth-row"><span class="gr-label">기술</span>
+                    {% for name, n in gb.skill_accs.items() %}{{ skill_labels_g.get(name, name) }} +{{ n }}{% if not loop.last %} / {% endif %}{% endfor %}
+                  </div>
+                {% endif %}
+                {% if gb.get('material_accs') %}
+                  <div class="growth-row"><span class="gr-label">숙련도</span>
+                    {% for name, n in gb.material_accs.items() %}{{ mat_labels_g.get(name, name) }} +{{ n }}{% if not loop.last %} / {% endif %}{% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {# 3. 명령서 풀 (인재관리 토큰·페널티 — S2-B, 2026-05-31 통솔→인재관리) #}
+            {% if gb.get('commands') %}
+              <div class="growth-section growth-section--cmd">
+                <div class="growth-section-title">🪪 명령서 풀 (인재관리 효과)</div>
+                <ul class="growth-list">
+                  {% for c in gb.commands %}
+                    <li>
+                      <span>{{ c.label }}</span>
+                      {% if c.rerolls_remaining > 0 %}<span class="result-success">🎲 재굴림 {{ c.rerolls_remaining }}</span>{% endif %}
+                      {% if c.penalty_modifier < 0 %}<span class="result-fail">⚠ 페널티 {{ c.penalty_modifier }}</span>{% endif %}
+                      {% if c.rerolls_remaining == 0 and c.penalty_modifier == 0 %}<span class="growth-kind-badge">기본</span>{% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
         </div>
-        {% else %}
-        <div class="placeholder">아직 받은 편지가 없습니다.</div>
-        {% endif %}
-      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="placeholder">아직 성장 보고가 없습니다.</div>
+  {% endif %}
+</div>
+
+      <!-- 우편함: 거래 내역 -->
+<div class="tab-content" id="content-mailbox-trade">
+  <div class="panel-title">거래 내역</div>
+  {# 결과 레벨 한글→영문 클래스 매핑 (위 대장간 블록 lv_class와 동일) #}
+  {% set lv_class_t = {
+  '대성공': 'lv-crit-succ', '극단적_성공': 'lv-extreme-succ',
+  '어려운_성공': 'lv-hard-succ', '일반_성공': 'lv-normal-succ',
+  '실패': 'lv-fail', '대실패': 'lv-crit-fail'
+  } %}
+  {% if trade_mail %}
+    <div class="mail-list">
+      {% for mail in trade_mail %}
+        {% set b = mail.body %}
+        <div class="mail-item">
+          <div class="mail-header" onclick="toggleMailDetail('mail-tr-{{ loop.index }}')">
+            <div class="mail-title-line">
+              <span class="mail-title">{{ mail.title }}</span>
+              {% if mail.body and mail.body.get('character_name') %}
+                <span class="mail-actor">👤 {{ mail.body.get('character_name') }}</span>
+              {% endif %}
+            </div>
+            <span class="mail-date">{{ mail.created_at[:10] }}</span>
+          </div>
+          <div class="mail-detail" id="mail-tr-{{ loop.index }}" style="display:none">
+            <div class="trade-mail-row"><span class="tm-label">상인</span>{{ b.get('merchant_name', '—') }}</div>
+            <div class="trade-mail-row"><span class="tm-label">품목</span>
+              {{ material_labels.get(b.get('material'), b.get('material')) }}
+              {{ item_type_labels.get(b.get('item_type'), b.get('item_type')) }}
+              {% if b.get('quality') %}(품질 {{ b.get('quality') }}등급){% endif %}
+            </div>
+            {% if b.get('trade_action') == 'buy' %}
+              <div class="trade-mail-row"><span class="tm-label">수량</span>
+                요청 {{ b.get('quantity_requested', 0) }}개 / 도착 {{ b.get('quantity_received', 0) }}개</div>
+              <div class="trade-mail-row"><span class="tm-label">자금</span>
+                지불 {{ b.get('amount_paid', 0) }}량{% if b.get('amount_refunded') %} / 환불 {{ b.get('amount_refunded') }}량{% endif %}</div>
+              {% set dr = b.get('dexterity_roll') %}
+              {% if dr %}
+                <div class="trade-mail-row"><span class="tm-label">민첩 판정</span>
+                  d100 {{ dr.get('roll') }} vs 민첩 {{ dr.get('dex') }} → <span class="{{ lv_class_t.get(dr.get('level'), '') }}">{{ dr.get('level') }}</span></div>
+              {% endif %}
+              <div class="trade-mail-row"><span class="tm-label">경쟁 순위</span>{{ b.get('competition_rank', '—') }}</div>
+            {% else %}
+              <div class="trade-mail-row"><span class="tm-label">수량</span>{{ b.get('quantity', 0) }}개</div>
+              <div class="trade-mail-row"><span class="tm-label">자금</span>
+                단가 {{ b.get('unit_price', 0) }}량 → 입금 {{ b.get('amount_received', 0) }}량</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="placeholder">아직 거래 내역이 없습니다.</div>
+  {% endif %}
+</div>
 
       <!-- 중앙광장 -->
-      <div class="tab-content" id="content-plaza-main">
-        <div class="panel-title">중앙광장</div>
-        <div class="placeholder">준비 중입니다.</div>
-      </div>
+<div class="tab-content" id="content-plaza-main">
+  <div class="panel-title">중앙광장</div>
+  {% if not character %}
+    <div class="placeholder">캐릭터를 먼저 생성해야 합니다.</div>
+  {% else %}
 
-    </main>
+        <!-- 담당 캐릭터 -->
+    <div class="form-row plaza-section" style="margin-bottom: var(--space-3);">
+      <span class="form-label">담당</span>
+      <select id="plaza-character" class="form-select" onchange="onPlazaCharChange()">
+        {% for opt in character_options %}
+          <option value="{{ opt.id }}"{% if opt.disabled %} disabled{% endif %}>
+            {{ opt.name }}{% if opt.disabled %} (중상 — 거래 불가){% endif %}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+        <!-- 소형 인벤토리 5칸 -->
+    <div class="plaza-section">
+      <div class="sub-section-title">소형 인벤토리 (거래 작업대 · 5칸)</div>
+      <div class="plaza-hint">구매한 자원은 이곳에 도착합니다. '창고로' 버튼으로 영구 보관·제작용 창고에 옮기세요.</div>
+      <div class="inv-slots" id="plaza-inv-slots"></div>
+    </div>
+
+    <hr class="section-divider" style="max-width:560px;">
+
+        <!-- 구매 -->
+    <div class="plaza-section">
+      <div class="sub-section-title">구매</div>
+      <form method="post" action="/commands/trade-buy" id="buy-form">
+        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+        <input type="hidden" name="target_character_id" id="buy-char-id">
+        <input type="hidden" name="target_item_type" id="buy-item-type">
+        <input type="hidden" name="target_material" id="buy-item-material">
+        <div class="form-row">
+          <span class="form-label">상인</span>
+          <select id="buy-merchant" name="merchant_id" class="form-select" onchange="onBuyMerchantChange()"></select>
+        </div>
+        <div class="form-row">
+          <span class="form-label">품목</span>
+          <select id="buy-item" class="form-select" onchange="updateBuyPrediction()"></select>
+        </div>
+        <div class="form-row">
+          <span class="form-label">수량</span>
+          <input type="number" name="quantity" id="buy-qty" class="form-input" min="1" step="1" value="1"
+                 oninput="updateBuyPrediction()">
+        </div>
+        <button type="submit" id="buy-submit" class="btn-primary">구매 명령 제출</button>
+      </form>
+      <div class="plaza-predict" id="buy-predict">—</div>
+    </div>
+
+    <hr class="section-divider" style="max-width:560px;">
+
+        <!-- 판매 -->
+    <div class="plaza-section">
+      <div class="sub-section-title">판매</div>
+      <div class="plaza-hint">소형 인벤토리의 자원·무기를 매각합니다. 광물·주괴는 관시 행상이 시세 90%로, 무기는 성주 직속 군수관이 정가로 매입합니다.</div>
+      <form method="post" action="/commands/trade-sell" id="sell-form">
+        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+        <div class="form-row">
+          <span class="form-label">판매품</span>
+          <select name="item_id" id="sell-item" class="form-select" onchange="updateSellPrediction()"></select>
+        </div>
+        <div class="form-row">
+          <span class="form-label">수량</span>
+          <input type="number" name="quantity" id="sell-qty" class="form-input" min="1" step="1" value="1"
+                 oninput="updateSellPrediction()">
+        </div>
+        <div class="form-row">
+          <span class="form-label">매입처</span>
+          <span class="form-value" id="sell-merchant">—</span>
+        </div>
+        <button type="submit" id="sell-submit" class="btn-primary">판매 명령 제출</button>
+      </form>
+      <div class="plaza-predict" id="sell-predict">—</div>
+    </div>
+
+  {% endif %}
+</div>
+
+</main>
 
     <!-- 우측 보조 패널 -->
-    <aside class="right-panel">
+<aside class="right-panel">
 
       <!-- 기본 상태 (아무것도 선택 안 됨) -->
-      <div class="right-content active" id="right-default">
-        <div class="right-empty">항목을 선택하면<br>상세 정보가 표시됩니다.</div>
-      </div>
+  <div class="right-content active" id="right-default">
+    <div class="right-empty">항목을 선택하면<br>상세 정보가 표시됩니다.</div>
+  </div>
 
       <!-- 스탯 상세 -->
-      <div class="right-content" id="right-stat">
-        <div class="right-title">스탯 정보</div>
-        <div class="stat-desc-name" id="right-stat-name"></div>
-        <div class="stat-desc-val" id="right-stat-val"></div>
-        <div class="stat-desc-text" id="right-stat-desc"></div>
-      </div>
-
-    </aside>
+  <div class="right-content" id="right-stat">
+    <div class="right-title">스탯 정보</div>
+    <div class="stat-desc-name" id="right-stat-name"></div>
+    <div class="stat-desc-val" id="right-stat-val"></div>
+    <div class="stat-desc-text" id="right-stat-desc"></div>
   </div>
+
+      <!-- 고용인 — 현재 NPC 상세 (P5) -->
+  <div class="right-content" id="right-npc-hired">
+    <div class="right-title" id="right-npc-hired-name">NPC 상세</div>
+    <div class="cmd-info-panel">
+      <div class="form-row"><span class="form-label">스탯</span><span class="form-value" id="right-npc-hired-stats">—</span></div>
+      <div class="form-row"><span class="form-label">기술</span><span class="form-value" id="right-npc-hired-skills">—</span></div>
+      <div class="form-row"><span class="form-label">소재 숙련</span><span class="form-value" id="right-npc-hired-prof">—</span></div>
+      <div class="form-row"><span class="form-label">스태미너</span><span class="form-value" id="right-npc-hired-stamina">—</span></div>
+      <div class="form-row"><span class="form-label">수수료</span><span class="form-value" id="right-npc-hired-fee">—</span></div>
+      <div class="form-row"><span class="form-label">영입 시 비용</span><span class="form-value" id="right-npc-hired-hire">—</span></div>
+      <div class="form-row"><span class="form-label">상태</span><span class="form-value" id="right-npc-hired-status">정상</span></div>
+    </div>
+    <form method="post" action="/npc/fire" style="margin-top: var(--space-2);" onsubmit="return confirm('정말 해고하시겠습니까? 환불 없음, pending 명령 모두 취소됩니다.');">
+      <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+      <input type="hidden" name="npc_id" id="right-npc-hired-id">
+      <button type="submit" class="btn-danger">해고</button>
+    </form>
+  </div>
+
+      <!-- 고용인 — 후보 NPC 상세 (P5) -->
+  <div class="right-content" id="right-npc-candidate">
+    <div class="right-title" id="right-npc-cand-name">후보 상세</div>
+    <div class="cmd-info-panel">
+      <div class="form-row"><span class="form-label">스탯</span><span class="form-value" id="right-npc-cand-stats">—</span></div>
+      <div class="form-row"><span class="form-label">합계</span><span class="form-value" id="right-npc-cand-total">—</span></div>
+      <div class="form-row"><span class="form-label">기술</span><span class="form-value" id="right-npc-cand-skills">—</span></div>
+      <div class="form-row"><span class="form-label">소재 숙련</span><span class="form-value" id="right-npc-cand-prof">—</span></div>
+      <div class="form-row"><span class="form-label">영입금</span><span class="form-value" id="right-npc-cand-hire">—</span></div>
+      <div class="form-row"><span class="form-label">수수료</span><span class="form-value" id="right-npc-cand-fee">—</span></div>
+    </div>
+    <form method="post" action="/npc/hire" style="margin-top: var(--space-2);">
+      <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+      <input type="hidden" name="candidate_id" id="right-npc-cand-id">
+      <button type="submit" id="right-npc-cand-hire-btn" class="btn-primary">매력 판정으로 고용 시도</button>
+    </form>
+    <div class="item-section-placeholder" style="margin-top: var(--space-1);">
+      본인 캐릭터의 매력으로 d100 판정. 일반 성공 이상이면 영입금 차감 + 고용. 실패 시 비용 없음, 결과는 우편함에서 확인.
+    </div>
+  </div>
+
+      <!-- 통제실 명령 상세 (A-1) -->
+  <div class="right-content" id="right-command">
+    <div class="right-title" id="right-command-title">명령 상세</div>
+    <div class="cmd-info-panel">
+      <div class="form-row"><span class="form-label">담당</span><span class="form-value" id="right-command-owner">—</span></div>
+      <div class="form-row"><span class="form-label">결과물</span><span class="form-value" id="right-command-result">—</span></div>
+      <div class="form-row"><span class="form-label">예약 스태미너</span><span class="form-value" id="right-command-stamina">—</span></div>
+      <div class="form-row"><span class="form-label">예약 자금</span><span class="form-value" id="right-command-gold">—</span></div>
+      <div class="form-row"><span class="form-label">제출 시각</span><span class="form-value" id="right-command-time">—</span></div>
+    </div>
+    <form method="post" action="/commands/cancel" style="margin-top: var(--space-2);">
+      <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+      <input type="hidden" name="command_id" id="right-command-id">
+      <button type="submit" id="right-command-cancel-btn" class="btn-danger">취소</button>
+    </form>
+    <div id="right-command-cancel-hint" class="item-section-placeholder" style="margin-top: var(--space-1);">
+      다음 배치까지 10분 미만이면 취소할 수 없습니다.
+    </div>
+  </div>
+
+      <!-- 창고 아이템 상세 (P3-4) -->
+  <div class="right-content" id="right-item">
+    <div class="right-title" id="right-item-name">아이템 상세</div>
+    <div class="item-stats-row" id="right-item-stats"></div>
+    <div class="item-section">
+      <div class="item-section-label">설명</div>
+      <div class="item-section-body" id="right-item-desc"></div>
+    </div>
+    <div class="item-section">
+      <div class="item-section-label">사용처</div>
+      <div class="item-section-body" id="right-item-usage"></div>
+    </div>
+    <div class="item-section">
+      <div class="item-section-label">시장 시세</div>
+      <div class="item-section-body item-section-placeholder">추후 추가 예정</div>
+    </div>
+    <div class="item-section">
+      <div class="item-section-label">인벤토리</div>
+      <form method="post" action="/commands/move-item" class="move-item-form">
+        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+        <input type="hidden" name="item_id" id="right-item-move-id">
+        <input type="hidden" name="direction" value="to_inventory">
+        <div class="form-row move-item-row">
+          <span class="form-label">대상</span>
+          <select name="target_character_id" id="right-item-move-target" class="form-select" onchange="writeActor(this.value)">
+            {% for opt in character_options %}
+              <option value="{{ opt.id }}"{% if opt.disabled %} disabled{% endif %}>{{ opt.name }}{% if opt.disabled %} (중상){% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-row">
+          <span class="form-label">수량</span>
+          <input type="number" name="quantity" id="right-item-move-qty" class="form-input move-item-qty" min="1" value="1">
+          <span id="right-item-move-max" class="item-section-placeholder move-item-max">/ 0</span>
+        </div>
+        <button type="submit" class="btn-primary move-item-submit">📦 인벤토리로 이동</button>
+      </form>
+      <div class="item-section-placeholder" style="margin-top: var(--space-1);">기존 슬롯 있으면 stack 한도까지, 신규 슬롯은 인벤 5칸이 남아 있어야 이동 가능.</div>
+    </div>
+  </div>
+
+</aside>
+</div>
 
   <!-- 하단 계정관리 -->
-  <div class="account-bar">
-    <form method="post" action="/admin/run-batch" style="display:inline">
-      <button type="submit" class="btn-action" style="font-size:0.8rem; padding:0.25rem 0.8rem;">⚙ 배치 실행 (테스트)</button>
+<div class="account-bar">
+  {% if delete_error %}
+    <span class="delete-error">{{ delete_error }}</span>
+  {% endif %}
+  <details>
+    <summary>회원탈퇴</summary>
+    <form method="post" action="/delete-account" class="delete-form">
+      <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+      <input type="password" name="password" placeholder="비밀번호 확인" required>
+      <button type="submit" class="btn-danger">탈퇴 확인</button>
     </form>
-    {% if delete_error %}
-    <span style="color:#ff6b8a; font-size:0.82rem;">{{ delete_error }}</span>
-    {% endif %}
-    <details>
-      <summary>회원탈퇴</summary>
-      <form method="post" action="/delete-account" class="delete-form">
-        <input type="password" name="password" placeholder="비밀번호 확인" required>
-        <button type="submit" class="btn-delete">탈퇴 확인</button>
-      </form>
-    </details>
-  </div>
+  </details>
+</div>
 
 </div>
 
 <script>
-const STAT_DESCS = {
-  '무력': '전투 능력을 나타냅니다. 전투 판정, 제압, 물리적 위협 등에 사용됩니다.',
-  '지략': '전략과 계획 능력을 나타냅니다. 작전 수립, 함정 탐지, 정보 분석에 사용됩니다.',
-  '매력': '설득과 외교 능력을 나타냅니다. 협상, 포섭, NPC 관계 형성에 영향을 줍니다.',
-  '통솔': '리더십과 지휘 능력을 나타냅니다. 부하 지시 우선순위 및 배치 처리 순서에 영향을 줍니다.',
-  '건강': '체력과 생존력을 나타냅니다. 스태미너 최대치 및 회복력에 영향을 줍니다.',
-  '운': '행운을 나타냅니다. 판정 성공률 보정 및 돌발 이벤트에 영향을 줍니다.',
-};
-
-let currentSection = 'blacksmith';
-let currentTab = 'character';
-
-function switchSection(section) {
-  // 상단 탭 활성화
-  document.querySelectorAll('.top-tab').forEach(btn => btn.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-
-  // 사이드바 섹션 전환
-  document.querySelectorAll('.sidebar-section').forEach(s => s.classList.remove('active'));
-  document.getElementById('sidebar-' + section).classList.add('active');
-
-  // 해당 섹션의 첫 번째 사이드 아이템 클릭
-  const firstItem = document.querySelector('#sidebar-' + section + ' .sidebar-item');
-  if (firstItem) firstItem.click();
-
-  currentSection = section;
-}
-
-function switchTab(tab) {
-  // 좌측 탭 활성화 (현재 섹션 안에서만)
-  const sidebarSection = document.getElementById('sidebar-' + currentSection);
-  sidebarSection.querySelectorAll('.sidebar-item').forEach(btn => btn.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-
-  // 중앙 패널 전환
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  document.getElementById('content-' + tab).classList.add('active');
-
-  // 우측 패널 초기화
-  showRightDefault();
-
-  currentTab = tab;
-}
-
-function showStatDesc(name, val) {
-  document.querySelectorAll('.right-content').forEach(c => c.classList.remove('active'));
-  document.getElementById('right-stat').classList.add('active');
-  document.getElementById('right-stat-name').textContent = name;
-  document.getElementById('right-stat-val').textContent = val + ' / 75';
-  document.getElementById('right-stat-desc').textContent = STAT_DESCS[name] || '';
-}
-
-function showRightDefault() {
-  document.querySelectorAll('.right-content').forEach(c => c.classList.remove('active'));
-  document.getElementById('right-default').classList.add('active');
-}
-
-// 카운트다운
-function getNextBatch() {
-  const now = new Date();
-  const kst = new Date(now.getTime() + 9 * 3600 * 1000);
-  const h = kst.getUTCHours(), m = kst.getUTCMinutes(), s = kst.getUTCSeconds();
-  const nowSec = h * 3600 + m * 60 + s;
-  const targetH = nowSec < 10 * 3600 ? 10 : nowSec < 22 * 3600 ? 22 : 34;
-  return targetH * 3600 - nowSec;
-}
-
-function updateCountdown() {
-  const diff = getNextBatch();
-  const hh = Math.floor(diff / 3600).toString().padStart(2, '0');
-  const mm = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
-  const ss = (diff % 60).toString().padStart(2, '0');
-  document.getElementById('countdown').textContent = hh + ':' + mm + ':' + ss;
-}
-
-updateCountdown();
-setInterval(updateCountdown, 1000);
-
-function toggleMailDetail(id) {
-  const el = document.getElementById(id);
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-// /dashboard#control 같은 fragment로 진입 시 해당 sidebar 탭을 자동 활성화
-window.addEventListener('DOMContentLoaded', () => {
-  if (!location.hash) return;
-  const target = location.hash.substring(1);
-  const btn = document.querySelector('.sidebar-item[onclick*="\'' + target + '\'"]');
-  if (btn) btn.click();
-});
+  window.__DASH__ = {
+    characters_data: {{ characters_data | tojson | safe }},
+    material_labels: {{ material_labels | tojson | safe }},
+    material_groups: {{ material_groups | tojson | safe }},
+    weapon_codes: {{ weapon_codes | tojson | safe }},
+    weapon_labels: {{ weapon_labels | tojson | safe }},
+    weapon_recipes: {{ weapon_recipes | tojson | safe }},
+    weapon_stamina_bonus: {{ weapon_stamina_bonus | tojson | safe }},
+    ore_codes: {{ ore_codes | tojson | safe }},
+    alloy_codes: {{ alloy_codes | tojson | safe }},
+    alloy_recipes: {{ alloy_recipes | tojson | safe }},
+    material_info: {{ material_info | tojson | safe }},
+    batch_hours_kst: {{ batch_hours_kst | tojson | safe }},
+    hired_npcs: {{ hired_npcs | tojson | safe }},
+    npc_candidates: {{ npc_candidates | tojson | safe }},
+    pending_commands: {{ pending_commands | tojson | safe }},
+    items: {{ items | tojson | safe }},
+    category_by_type: {{ category_by_type | tojson | safe }},
+    category_order: {{ category_order | tojson | safe }},
+    category_labels: {{ category_labels | tojson | safe }},
+    item_type_labels: {{ item_type_labels | tojson | safe }},
+    item_descriptions: {{ item_descriptions | tojson | safe }},
+    merchants: {{ merchants | tojson | safe }},
+    merchant_inventory: {{ merchant_inventory | tojson | safe }},
+    market_prices: {{ market_prices | tojson | safe }},
+    inventory_items: {{ inventory_items | tojson | safe }},
+    quality_multipliers: {{ quality_multipliers | tojson | safe }},
+    user_gold: {{ user_gold | tojson | safe }}
+  };
 </script>
+<script src="/static/js/dashboard.js" defer></script>
 {% endblock %}

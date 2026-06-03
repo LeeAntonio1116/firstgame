@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}관리자 인증{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>🔧 관리자 인증</h1>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    {% if sent %}
+      <div class="success">
+        인증 코드를 <b>{{ admin_email }}</b>로 발송했습니다.<br>
+        5분 안에 입력하세요.
+      </div>
+    {% else %}
+      <p style="margin-bottom:1rem; font-size:0.9rem; color:#a0a0b0;">
+        관리자 패널에 진입하려면 OTP 인증이 필요합니다.<br>
+        수신 이메일: <b>{{ admin_email }}</b>
+      </p>
+      <form method="post" action="/admin/otp/send" style="margin-bottom:1rem;">
+        <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+        <button type="submit">인증 코드 발송</button>
+      </form>
+    {% endif %}
+
+    <form method="post" action="/admin/otp/verify">
+      <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+      <label>인증 코드 (8자리)</label>
+      <input type="text" name="otp_code" maxlength="8" autocomplete="off"
+             placeholder="예: K3M9X2P7" required style="letter-spacing:0.2rem; text-transform:uppercase;">
+      <button type="submit">검증</button>
+    </form>
+
+    <div class="link-row">
+      <a href="/dashboard">← 대시보드로 돌아가기</a>
+    </div>
+  </div>
+{% endblock %}

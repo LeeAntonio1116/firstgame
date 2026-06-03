@@ -1,0 +1,7 @@
+# 개발용 의존성 — 린터·포매터·보안 점검 도구
+# 본 파일은 prod 배포 환경에 설치하지 않는다 (requirements.txt만 설치).
+# 로컬에서: pip install -r requirements-dev.txt
+ruff==0.15.14
+djhtml==3.0.11
+bandit==1.9.4
+pip-audit==2.10.0

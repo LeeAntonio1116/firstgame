@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 패널 — 삼국지 길드</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/tokens.css">
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; background: var(--color-bg); color: var(--color-text-primary); min-height: 100vh; padding: var(--space-6); }
+      .container { max-width: 1100px; margin: 0 auto; }
+      .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-panel-border); }
+      .header h1 { color: var(--color-point); font-size: 1.4rem; font-family: 'Noto Serif KR', serif; }
+      .header-actions { display: flex; gap: var(--space-2); align-items: center; font-size: 0.85rem; color: var(--color-text-tertiary); }
+      .header-actions a { color: var(--color-text-primary); text-decoration: none; padding: var(--space-1) var(--space-2); background-color: var(--color-bg-elevated); border: 1px solid var(--color-panel-border); border-radius: var(--radius-md); transition: background var(--duration-base) var(--easing-standard); }
+      .header-actions a:hover { background-color: var(--state-hover-bg); }
+      .section { background-color: var(--color-panel); background-image: var(--texture-parchment); background-blend-mode: overlay; border: 1px solid var(--color-panel-border); border-radius: var(--radius-lg); box-shadow: var(--color-panel-shadow); padding: var(--space-4) var(--space-4); margin-bottom: var(--space-4); }
+      .section h2 { color: var(--color-point); font-size: 1rem; margin-bottom: var(--space-3); font-family: 'Noto Serif KR', serif; }
+      form { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; margin-bottom: var(--space-2); }
+      form label { font-size: 0.85rem; color: var(--color-text-tertiary); min-width: 4rem; }
+      select, input[type="number"], input[type="text"] { padding: var(--space-1) var(--space-2); background-color: var(--color-bg-elevated); border: 1px solid var(--color-panel-border); border-radius: var(--radius-md); color: var(--color-text-primary); font-size: 0.9rem; font-family: inherit; }
+      input[type="number"] { width: 6rem; font-family: 'Outfit', sans-serif; font-variant-numeric: tabular-nums; }
+      button { padding: var(--space-1) var(--space-3); background: var(--color-accent); border: 1px solid var(--color-accent-dim); border-radius: var(--radius-md); color: hsl(30, 20%, 10%); font-weight: 700; cursor: pointer; font-size: 0.9rem; font-family: inherit; transition: background var(--duration-base) var(--easing-standard); }
+      button:hover { background: var(--color-accent-hover); }
+      button.danger { background: transparent; color: var(--color-point); border: 1px solid var(--color-point-dim); font-weight: 500; }
+      button.danger:hover { background: var(--color-point); color: hsl(30, 20%, 10%); }
+      .placeholder { color: var(--color-text-disabled); font-size: 0.85rem; padding: var(--space-2) 0; }
+      table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+      th, td { padding: var(--space-1) var(--space-2); text-align: left; border-bottom: 1px solid var(--color-panel-border); }
+      th { color: var(--color-text-tertiary); font-weight: normal; }
+      td.result-success { color: var(--color-success); }
+      td.result-failed { color: var(--color-point); }
+      td.payload-cell { color: var(--color-text-disabled); font-size: 0.78rem; }
+      .label-block { display: inline-block; margin-right: var(--space-2); }
+      .form-note { font-size: 0.82rem; color: var(--color-text-tertiary); }
+      .form-note-sm { font-size: 0.8rem; color: var(--color-text-tertiary); }
+      .character-block { margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px dashed var(--color-panel-border); }
+      .character-block-label { font-size: 0.85rem; color: var(--color-text-tertiary); }
+      .character-block-label b { color: var(--color-text-primary); }
+      .reset-row { display: flex; gap: var(--space-1); flex-wrap: wrap; align-items: center; margin-top: var(--space-1); }
+      .reset-row-name { font-size: 0.85rem; color: var(--color-text-tertiary); min-width: 5rem; }
+      .audit-time-col { width: 11rem; }
+      .audit-result-col { width: 8rem; }
+      .inner-form-spaced { margin-top: var(--space-1); }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="header">
+        <h1>🔧 관리자 패널</h1>
+        <div class="header-actions">
+          <span>{{ user_row.username }}</span>
+          <a href="/dashboard">대시보드</a>
+          <form method="post" action="/admin/logout">
+            <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+            <button type="submit">관리자 로그아웃</button>
+          </form>
+        </div>
+      </div>
+
+  <!-- ── 1섹션: 배치 트리거 ─────────────────── -->
+      <div class="section">
+        <h2>1. 배치 트리거</h2>
+        <form method="post" action="/admin/run-batch">
+          <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+          <button type="submit">⚙ 배치 실행 (수동)</button>
+          <span class="form-note">정상 배치는 매일 10:00 / 22:00 KST. 테스트용 수동 실행.</span>
+        </form>
+      </div>
+
+  <!-- ── 2섹션: 콘텐츠 부여 ───────────────────── -->
+      <div class="section">
+        <h2>2. 콘텐츠 부여</h2>
+
+        <form method="post" action="/admin/grant-gold">
+          <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+          <label>💰 개별 지급</label>
+          <select name="target_user_id">
+            {% for u in all_users %}
+              <option value="{{ u.id }}"{% if u.id == user_row.id %} selected{% endif %}>
+                {{ u.username }} ({{ u.get('gold') or 0 }}량){% if u.is_admin %} 🔧{% endif %}
+              </option>
+            {% endfor %}
+          </select>
+          <input type="number" name="amount" min="1" value="500">
+          <span class="form-note-sm">량 단위</span>
+          <button type="submit">지급</button>
+        </form>
+
+        <form method="post" action="/admin/grant-gold-all"
+              onsubmit="return confirm('전체 유저(' + {{ all_users|length }} + '명)에게 자금을 지급합니다. 진행할까요?');">
+          <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+          <label>💰 전체 지급</label>
+          <input type="number" name="amount" min="1" value="500">
+          <span class="form-note-sm">량 단위 × {{ all_users|length }}명</span>
+          <button type="submit" class="danger">전원에게</button>
+        </form>
+
+        {% if characters %}
+          {% for c in characters %}
+            <div class="character-block">
+              <div class="label-block character-block-label">캐릭터: <b>{{ c.name }}</b></div>
+              <form method="post" action="/admin/set-proficiency" class="inner-form-spaced">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                <input type="hidden" name="character_id" value="{{ c.id }}">
+                <label>📈 소재</label>
+                <select name="material">
+                  {% for opt in material_admin_options %}
+                    <option value="{{ opt.code }}">{{ '★' * opt.rarity }} {{ opt.name }}</option>
+                  {% endfor %}
+                </select>
+                <input type="number" name="value" min="0" max="95" value="50">
+                <button type="submit">설정</button>
+              </form>
+              <form method="post" action="/admin/set-skill">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                <input type="hidden" name="character_id" value="{{ c.id }}">
+                <label>🛠 기술</label>
+                <select name="skill_name">
+                  {% for opt in skill_admin_options %}
+                    <option value="{{ opt.code }}">{{ opt.name }}</option>
+                  {% endfor %}
+                </select>
+                <input type="number" name="value" min="0" max="95" value="50">
+                <button type="submit">설정</button>
+              </form>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="placeholder">캐릭터가 없습니다 — 먼저 캐릭터를 생성하세요.</div>
+        {% endif %}
+      </div>
+
+  <!-- ── 3섹션: 초기화 ─────────────────────────── -->
+      <div class="section">
+        <h2>3. 초기화</h2>
+        {% if characters %}
+          {% for c in characters %}
+            <div class="reset-row">
+              <span class="reset-row-name">{{ c.name }}</span>
+              <form method="post" action="/admin/reset-items" onsubmit="return confirm('창고 전체 삭제. 진행할까요?');">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                <input type="hidden" name="character_id" value="{{ c.id }}">
+                <button type="submit" class="danger">창고</button>
+              </form>
+              <form method="post" action="/admin/reset-skills" onsubmit="return confirm('기술치를 초기값으로 리셋합니다.');">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                <input type="hidden" name="character_id" value="{{ c.id }}">
+                <button type="submit" class="danger">기술</button>
+              </form>
+              <form method="post" action="/admin/reset-proficiency" onsubmit="return confirm('소재 숙련도를 초기값으로 리셋합니다.');">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                <input type="hidden" name="character_id" value="{{ c.id }}">
+                <button type="submit" class="danger">소재 숙련도</button>
+              </form>
+              <form method="post" action="/admin/reset-mailbox" onsubmit="return confirm('우편함 전체 삭제.');">
+                <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+                <input type="hidden" name="character_id" value="{{ c.id }}">
+                <button type="submit" class="danger">우편함</button>
+              </form>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="placeholder">캐릭터가 없습니다.</div>
+        {% endif %}
+      </div>
+
+  <!-- ── 4섹션: 시장 운영 ───────────────────────────── -->
+      <div class="section">
+        <h2>4. 시장 운영</h2>
+        <form method="post" action="/admin/reset-market"
+              onsubmit="return confirm('시세 ±15% 갱신 + 상인 재고 보충 + 유랑상단 라인업 교체. 진행할까요?');">
+          <input type="hidden" name="csrf_token" value="{{ request.state.csrf_token }}">
+          <button type="submit">🔄 시장 일일 리셋</button>
+          <span class="form-note">매일 10시 자동 호출. 검증용 수동 실행.</span>
+        </form>
+      </div>
+
+  <!-- ── 최근 감사 로그 ─────────────────────── -->
+      <div class="section">
+        <h2>최근 작업 기록 (20건)</h2>
+        {% if recent_audits %}
+          <table>
+            <thead>
+              <tr><th class="audit-time-col">시각</th><th>엔드포인트</th><th class="audit-result-col">결과</th><th>페이로드</th></tr>
+            </thead>
+            <tbody>
+              {% for r in recent_audits %}
+                <tr>
+                  <td>{{ r.created_at }}</td>
+                  <td>{{ r.endpoint }}</td>
+                  <td class="{% if r.result == 'success' %}result-success{% else %}result-failed{% endif %}">{{ r.result }}</td>
+                  <td class="payload-cell">{{ r.payload }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="placeholder">기록 없음.</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </body>
+</html>

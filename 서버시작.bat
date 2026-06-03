@@ -1,4 +1,4 @@
 @echo off
-cd /d "e:\claude_workspace\firstgame"
-.venv\Scripts\uvicorn main:app --reload
+cd e:\claude_workspace\firstgame
+.\.venv\Scripts\python.exe -m uvicorn main:app --reload
 pause
