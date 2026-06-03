@@ -589,6 +589,8 @@ function inventoryItemsForPlazaActor() {
 function renderInventorySlots() {
   const wrap = document.getElementById("plaza-inv-slots");
   if (!wrap) return;
+  // CSRF: 서버 렌더된 폼의 토큰을 재사용 (쿠키는 httponly라 JS가 못 읽음).
+  const csrf = (document.querySelector('input[name="csrf_token"]') || {}).value || "";
   const own = inventoryItemsForPlazaActor();
   let html = "";
   for (let i = 0; i < 5; i++) {
@@ -607,6 +609,9 @@ function renderInventorySlots() {
         it.id +
         '">' +
         '<input type="hidden" name="direction" value="to_warehouse">' +
+        '<input type="hidden" name="csrf_token" value="' +
+        csrf +
+        '">' +
         '<button type="submit">창고로</button></form>' +
         "</div>";
     } else {

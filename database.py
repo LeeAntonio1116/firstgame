@@ -7,9 +7,13 @@ R-5 (속도개선): async 클라이언트도 함께 제공. FastAPI 라우트에
 sync 함수(`db_select` 등)는 기존 호출처(배치 처리·동기 흐름)와 호환 유지.
 """
 
+import logging
+
 import httpx
 
 from config import SUPABASE_KEY, SUPABASE_URL
+
+logger = logging.getLogger("firstgame.database")
 
 _HEADERS = {
     "apikey": SUPABASE_KEY or "",
@@ -77,10 +81,31 @@ def db_upsert(table: str, rows: list[dict], on_conflict: str) -> list:
 # ── RPC (PostgreSQL 함수 — 원자 조건부 연산) ──────────────
 # 안정성 fix 2단계: 트랜잭션 없는 RMW를 DB측 원자 연산으로 대체. 함수는 migrations/
 # migration_stability_stage2.sql 에 정의 (미적용 시 404 — 마이그레이션 선행 필수).
+class RpcUnavailable(RuntimeError):
+    """PostgREST RPC가 404(함수 미존재 — 마이그/GRANT 미적용)이거나 도달 불가일 때.
+    SQL이 NULL을 반환하는 비즈니스 결과(200 + body null → None)와 명확히 구분한다.
+    main.py 전역 핸들러가 이 예외를 잡아 사용자에게 500 대신 친절 안내로 전환한다."""
+
+
 def db_rpc(fn: str, params: dict):
-    """PostgREST /rpc/<fn> 호출. 스칼라/JSON 반환."""
-    r = _client.post(f"/rpc/{fn}", json=params)
-    r.raise_for_status()
+    """PostgREST /rpc/<fn> 호출. 스칼라/JSON 반환.
+
+    성공(200)이면 응답 JSON 그대로 반환 — RPC가 SQL NULL을 반환하면 None(= '부족/없음'
+    비즈니스 결과, 호출처가 기존대로 해석). 함수 미존재(404)·네트워크 오류는 RpcUnavailable로
+    승격해 ERROR 로그를 남긴다(마이그/GRANT 미적용 실사고 — 2026-06-01 release_npc_fee 404
+    → 500 재발 방어). 404 외 HTTP 오류는 그대로 재전파.
+    """
+    try:
+        r = _client.post(f"/rpc/{fn}", json=params)
+        r.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            logger.error("RPC '%s' 404 — 함수 미존재(마이그/GRANT 미적용 의심)", fn)
+            raise RpcUnavailable(fn) from e
+        raise
+    except httpx.RequestError as e:
+        logger.error("RPC '%s' 호출 실패: %s", fn, type(e).__name__)
+        raise RpcUnavailable(fn) from e
     return r.json()
 
 

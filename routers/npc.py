@@ -5,6 +5,8 @@
 실패 → 비용 차감 없음, 후보는 풀에 잔존 (재시도 가능).
 """
 
+import logging
+
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
 
@@ -14,6 +16,8 @@ from engine.batch import _accumulate_exp
 from engine.npcs import NPC_TALENT_MANAGEMENT_INIT
 from routers.auth import get_current_user
 from routers.command import _refund_command_assets, _refund_item_row
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/npc")
 
@@ -289,7 +293,12 @@ async def fire_npc(request: Request, npc_id: str = Form(...)):
             continue  # 배치/사용자 취소가 이미 선점 — 환불하지 않음
         _refund_command_assets(cmd, user["sub"], sell_to="warehouse")
     # F-5: 선불 홀드된 이번 배치 수수료가 있으면 원자 환불 (단일 승자 — 동시 취소/해고에도 1회만)
-    release_npc_fee(npc_id, user["sub"])
+    # RPC 미존재(404) 시에도 해고는 완료시킨다 — 홀드 RPC가 없었다면 환불할 것도 없음
+    # (batch.py _charge_npc_fees settle 격리와 동일 패턴).
+    try:
+        release_npc_fee(npc_id, user["sub"])
+    except Exception:
+        logger.exception("해고 시 수수료 환불 실패 npc=%s", npc_id)
 
     # E-2: NPC 인벤 아이템 user 창고 회수 + npc_stat_exp 청소 (둘 다 FK 없어 자동삭제 안 됨)
     _recover_npc_inventory(npc_id, user["sub"])

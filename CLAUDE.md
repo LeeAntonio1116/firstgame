@@ -29,7 +29,7 @@
 
 ## 작업 절차
 - **마이그레이션 SQL**: 클로드가 `migrations/migration_*.sql` 작성 → 사용자가 Supabase 대시보드 SQL Editor에서 직접 실행. Supabase MCP 미사용 (VSCode 확장이 프로젝트별 mcpServers를 못 잡는 문제). 검증 쿼리도 사용자가 직접 실행.
-- **새 테이블 생성 시 RLS 비활성화**: `ALTER TABLE {name} DISABLE ROW LEVEL SECURITY;`를 마이그레이션 SQL 끝에 항상 포함. 자체 JWT 인증을 쓰므로 Supabase RLS는 끄는 게 정책.
+- **새 테이블 생성 시 RLS 활성화 (정책 없음 = deny-all)**: `ALTER TABLE {name} ENABLE ROW LEVEL SECURITY;`를 마이그레이션 SQL 끝에 항상 포함. 앱은 **secret 키(service_role)**로 접근하므로 RLS를 우회해 정상 동작하고, anon/publishable 경로는 deny-all로 차단된다. **정책(POLICY)은 만들지 않는다** — 서버 전용 앱이라 anon/authenticated가 직접 테이블에 붙을 일이 없다. (2026-06-04 전환: 과거 "RLS 비활성" 정책은 publishable 키 + RLS off = 키 유출 시 DB 전체 노출 구멍이라 폐기. 단일 출처 `migration_enable_rls.sql`·STATUS § 보안 패스.)
 - **모듈화 우선**: 새 기능은 처음부터 적절한 모듈(routers/ 또는 engine/)에 나눠 작성. 한 파일이 500줄을 넘어가기 시작하면 책임 분리를 먼저 고려. dashboard.html처럼 HTML+CSS+JS 한 파일에 몰지 않는다.
 - **CODE_MAP.md 동기화**: 코드 구조가 바뀌면(파일 추가·제거·이동, 라우트 추가·제거, 엔진 함수 시그니처 변경) 같은 세션에서 `CODE_MAP.md`를 갱신한다. 미세 변경(코멘트, 작은 헬퍼)은 갱신하지 않는다.
 

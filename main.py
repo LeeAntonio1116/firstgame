@@ -5,10 +5,11 @@ from zoneinfo import ZoneInfo
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import Depends, FastAPI, Request
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from config import ADMIN_EMAIL, ADMIN_EMAILS, IS_PROD
-from database import close_async_client, db_select, db_update
+from database import RpcUnavailable, close_async_client, db_select, db_update
 from engine.admin_audit import fetch_last_24h, mask_email
 from engine.email import send_admin_log
 from engine.market import ensure_market_seeded
@@ -125,6 +126,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, dependencies=[Depends(csrf_protect)])
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+# [보안 패스] RPC 미존재(404)·도달불가 → 사용자에게 500 대신 친절 안내(작업실 배너).
+# database.db_rpc가 RpcUnavailable로 승격 + ERROR 로그를 남긴 상태. RPC 사용 라우트는 전부
+# 인증된 POST 폼이라 /dashboard 리다이렉트가 UX 정합. 5개 RPC가 단일 마이그라 현실적 실패는
+# '전부 누락' = 각 흐름 첫 RPC가 변형 전 404 → 깔끔한 중단(부분 변형 없음).
+@app.exception_handler(RpcUnavailable)
+async def _rpc_unavailable_handler(request: Request, exc: RpcUnavailable):
+    return RedirectResponse("/dashboard?warn=service_unavailable#workshop", status_code=302)
 
 
 # R-1: 응답 시간 측정 + [S8] 보안 응답 헤더 (CSP·HTTPS 리다이렉트는 P+/배포 단계)
